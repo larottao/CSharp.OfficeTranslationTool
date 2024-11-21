@@ -1,4 +1,5 @@
 ﻿using LaRottaO.OfficeTranslationTool.Interfaces;
+using System.Windows.Forms;
 using static LaRottaO.OfficeTranslationTool.GlobalVariables;
 
 namespace LaRottaO.OfficeTranslationTool.Utils
@@ -8,6 +9,11 @@ namespace LaRottaO.OfficeTranslationTool.Utils
         public static void showInformationMessage(string text)
         {
             MessageBox.Show($"{text}", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        public static DialogResult showYesNoQuestion(string text)
+        {
+            return MessageBox.Show($"{text}", "", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
         }
 
         public static void showErrorMessage(string text)

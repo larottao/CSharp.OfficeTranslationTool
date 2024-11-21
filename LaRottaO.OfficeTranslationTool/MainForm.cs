@@ -58,6 +58,7 @@ namespace LaRottaO.OfficeTranslationTool
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             formLogic.closeOfficeFile();
+
             //TODO ALSO CLOSE THE APP
         }
 
@@ -87,10 +88,7 @@ namespace LaRottaO.OfficeTranslationTool
                 }
             }
         }
-
-        private void dataGridView_CellValuePushed(object sender, DataGridViewCellValueEventArgs e)
-        {
-        }
+     
 
         private String? previousCellValue;
 
@@ -99,6 +97,7 @@ namespace LaRottaO.OfficeTranslationTool
             if (!formLogic.areBothSourceAndDestintionLanguagesSet())
             {
                 UIHelpers.showInformationMessage("Please select the Source and Target languages first.");
+
                 //TODO this doesnt work
                 dataGridView.ClearSelection();
                 return;
@@ -135,11 +134,7 @@ namespace LaRottaO.OfficeTranslationTool
         private void comboBoxDestLanguage_SelectedIndexChanged(object sender, EventArgs e)
         {
             formLogic.setDictionaryLanguage(comboBoxSourceLanguage.Text, comboBoxDestLanguage.Text);
-        }
-
-        private void dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-        }
+        }     
 
         private void buttonTranslateAll_Click(object sender, EventArgs e)
         {
@@ -169,6 +164,37 @@ namespace LaRottaO.OfficeTranslationTool
             }
 
             formLogic.userClickedRow(e.RowIndex, e.ColumnIndex);
+        }
+      
+
+        private void buttonApplyChanges_Click(object sender, EventArgs e)
+        {
+            var replaceResult = formLogic.applyChangesOnOfficeFile(false, true);
+
+            if (replaceResult.success)
+            {
+                UIHelpers.showInformationMessage("Process complete");
+            }
+            else
+
+            {
+                UIHelpers.showErrorMessage(replaceResult.errorReason);
+            }
+        }
+
+        private void buttonRevertChanges_Click(object sender, EventArgs e)
+        {
+            var replaceResult = formLogic.applyChangesOnOfficeFile(true, false);
+
+            if (replaceResult.success)
+            {
+                UIHelpers.showInformationMessage("Process complete");
+            }
+            else
+
+            {
+                UIHelpers.showErrorMessage(replaceResult.errorReason);
+            }
         }
     }
 }

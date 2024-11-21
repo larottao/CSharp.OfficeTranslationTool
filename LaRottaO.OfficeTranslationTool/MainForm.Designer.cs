@@ -31,9 +31,13 @@
             dataGridView = new DataGridView();
             buttonOpenOfficeFile = new Button();
             panel1 = new Panel();
+            buttonApplyChanges = new Button();
+            label2 = new Label();
+            label1 = new Label();
             buttonTranslateAll = new Button();
             comboBoxDestLanguage = new ComboBox();
             comboBoxSourceLanguage = new ComboBox();
+            buttonRevertChanges = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView).BeginInit();
             panel1.SuspendLayout();
             SuspendLayout();
@@ -42,14 +46,12 @@
             // 
             dataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView.Location = new Point(12, 70);
+            dataGridView.Location = new Point(12, 83);
             dataGridView.Name = "dataGridView";
-            dataGridView.Size = new Size(1080, 476);
+            dataGridView.Size = new Size(1080, 463);
             dataGridView.TabIndex = 0;
-            dataGridView.CellBeginEdit += dataGridView_CellBeginEdit;
-            dataGridView.CellContentClick += dataGridView_CellContentClick;
-            dataGridView.CellEndEdit += dataGridView_CellEndEdit;
-            dataGridView.CellValuePushed += dataGridView_CellValuePushed;
+            dataGridView.CellBeginEdit += dataGridView_CellBeginEdit;          
+            dataGridView.CellEndEdit += dataGridView_CellEndEdit;         
             dataGridView.DataBindingComplete += dataGridView_DataBindingComplete;
             dataGridView.RowEnter += dataGridView_RowEnter;
             dataGridView.RowPostPaint += dataGridView_RowPostPaint;
@@ -59,9 +61,9 @@
             buttonOpenOfficeFile.FlatAppearance.BorderColor = Color.Silver;
             buttonOpenOfficeFile.FlatAppearance.BorderSize = 2;
             buttonOpenOfficeFile.FlatStyle = FlatStyle.Flat;
-            buttonOpenOfficeFile.Location = new Point(12, 7);
+            buttonOpenOfficeFile.Location = new Point(12, 12);
             buttonOpenOfficeFile.Name = "buttonOpenOfficeFile";
-            buttonOpenOfficeFile.Size = new Size(122, 37);
+            buttonOpenOfficeFile.Size = new Size(174, 37);
             buttonOpenOfficeFile.TabIndex = 1;
             buttonOpenOfficeFile.Text = "Open Office File";
             buttonOpenOfficeFile.UseVisualStyleBackColor = true;
@@ -69,6 +71,10 @@
             // 
             // panel1
             // 
+            panel1.Controls.Add(buttonRevertChanges);
+            panel1.Controls.Add(buttonApplyChanges);
+            panel1.Controls.Add(label2);
+            panel1.Controls.Add(label1);
             panel1.Controls.Add(buttonTranslateAll);
             panel1.Controls.Add(comboBoxDestLanguage);
             panel1.Controls.Add(comboBoxSourceLanguage);
@@ -76,17 +82,50 @@
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(1104, 53);
-            panel1.TabIndex = 2;
+            panel1.Size = new Size(1104, 64);
+            panel1.TabIndex = 2;          
+            // 
+            // buttonApplyChanges
+            // 
+            buttonApplyChanges.FlatAppearance.BorderColor = Color.Silver;
+            buttonApplyChanges.FlatAppearance.BorderSize = 2;
+            buttonApplyChanges.FlatStyle = FlatStyle.Flat;
+            buttonApplyChanges.Location = new Point(648, 12);
+            buttonApplyChanges.Name = "buttonApplyChanges";
+            buttonApplyChanges.Size = new Size(174, 37);
+            buttonApplyChanges.TabIndex = 8;
+            buttonApplyChanges.Text = "Apply changes in document";
+            buttonApplyChanges.UseVisualStyleBackColor = true;
+            buttonApplyChanges.Click += buttonApplyChanges_Click;
+            // 
+            // label2
+            // 
+            label2.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label2.Location = new Point(330, 7);
+            label2.Name = "label2";
+            label2.Size = new Size(108, 13);
+            label2.TabIndex = 7;
+            label2.Text = "Destination lang.";
+            label2.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label1
+            // 
+            label1.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label1.Location = new Point(206, 7);
+            label1.Name = "label1";
+            label1.Size = new Size(108, 13);
+            label1.TabIndex = 6;
+            label1.Text = "Source lang.";
+            label1.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // buttonTranslateAll
             // 
             buttonTranslateAll.FlatAppearance.BorderColor = Color.Silver;
             buttonTranslateAll.FlatAppearance.BorderSize = 2;
             buttonTranslateAll.FlatStyle = FlatStyle.Flat;
-            buttonTranslateAll.Location = new Point(409, 7);
+            buttonTranslateAll.Location = new Point(456, 12);
             buttonTranslateAll.Name = "buttonTranslateAll";
-            buttonTranslateAll.Size = new Size(122, 37);
+            buttonTranslateAll.Size = new Size(174, 37);
             buttonTranslateAll.TabIndex = 5;
             buttonTranslateAll.Text = "Translate All";
             buttonTranslateAll.UseVisualStyleBackColor = true;
@@ -94,8 +133,10 @@
             // 
             // comboBoxDestLanguage
             // 
+            comboBoxDestLanguage.BackColor = SystemColors.ControlLight;
+            comboBoxDestLanguage.FlatStyle = FlatStyle.Flat;
             comboBoxDestLanguage.FormattingEnabled = true;
-            comboBoxDestLanguage.Location = new Point(274, 15);
+            comboBoxDestLanguage.Location = new Point(330, 24);
             comboBoxDestLanguage.Name = "comboBoxDestLanguage";
             comboBoxDestLanguage.Size = new Size(108, 23);
             comboBoxDestLanguage.TabIndex = 4;
@@ -103,12 +144,27 @@
             // 
             // comboBoxSourceLanguage
             // 
+            comboBoxSourceLanguage.BackColor = SystemColors.ControlLight;
+            comboBoxSourceLanguage.FlatStyle = FlatStyle.Flat;
             comboBoxSourceLanguage.FormattingEnabled = true;
-            comboBoxSourceLanguage.Location = new Point(160, 15);
+            comboBoxSourceLanguage.Location = new Point(204, 24);
             comboBoxSourceLanguage.Name = "comboBoxSourceLanguage";
             comboBoxSourceLanguage.Size = new Size(108, 23);
             comboBoxSourceLanguage.TabIndex = 3;
             comboBoxSourceLanguage.SelectedIndexChanged += comboBoxSourceLanguage_SelectedIndexChanged;
+            // 
+            // buttonRevertChanges
+            // 
+            buttonRevertChanges.FlatAppearance.BorderColor = Color.Silver;
+            buttonRevertChanges.FlatAppearance.BorderSize = 2;
+            buttonRevertChanges.FlatStyle = FlatStyle.Flat;
+            buttonRevertChanges.Location = new Point(840, 12);
+            buttonRevertChanges.Name = "buttonRevertChanges";
+            buttonRevertChanges.Size = new Size(174, 37);
+            buttonRevertChanges.TabIndex = 9;
+            buttonRevertChanges.Text = "Revert changes in document";
+            buttonRevertChanges.UseVisualStyleBackColor = true;
+            buttonRevertChanges.Click += buttonRevertChanges_Click;
             // 
             // MainForm
             // 
@@ -135,5 +191,9 @@
         private ComboBox comboBoxDestLanguage;
         private ComboBox comboBoxSourceLanguage;
         private Button buttonTranslateAll;
+        private Label label1;
+        private Label label2;
+        private Button buttonApplyChanges;
+        private Button buttonRevertChanges;
     }
 }

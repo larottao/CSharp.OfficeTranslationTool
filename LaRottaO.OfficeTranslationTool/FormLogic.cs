@@ -294,5 +294,44 @@ namespace LaRottaO.OfficeTranslationTool
 
             return (true, "");
         }
+
+        public (Boolean success, String errorReason) applyChangesOnOfficeFile(Boolean useOriginalText, Boolean useTranslatedText)
+        {
+            _iDictionary.initializeLocalDictionary();
+
+            //Iterate on all items
+
+            foreach (ShapeElement shapeUnderTranslation in _iProcessOfficeFile.getShapesStoredInMemory().shapes)
+            {
+                //Check if the string is not a number, blank or pure symbols
+
+                if (string.IsNullOrEmpty(shapeUnderTranslation.originalText))
+                {
+                    continue;
+                }
+
+                if (!shapeUnderTranslation.originalText.Any(char.IsLetter))
+                {
+                    continue;
+                }
+
+                UIHelpers.setCursorOnDataGridRowThreadSafe(_dataGridView, shapeUnderTranslation.indexOnPresentation, true);
+
+                _iProcessOfficeFile.navigateToShapeOnFile(shapeUnderTranslation);
+
+                var replaceResult = _iProcessOfficeFile.replaceShapeText(shapeUnderTranslation, useOriginalText, useTranslatedText, true);
+
+                if (!replaceResult.success)
+                {
+                    DialogResult dialogResult = UIHelpers.showYesNoQuestion($"{replaceResult.errorReason} do you want to continue?");
+                    if (dialogResult == DialogResult.No)
+                    {
+                        return (false, replaceResult.errorReason);
+                    }
+                }
+            }
+
+            return (true, "");
+        }
     }
 }
