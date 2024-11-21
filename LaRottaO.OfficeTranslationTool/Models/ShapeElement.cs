@@ -13,6 +13,14 @@ namespace LaRottaO.OfficeTranslationTool.Models
         [Browsable(false)]
         public int indexOnSlide { get; set; }
 
+        [Browsable(false)]
+        public Boolean belongsToATable { get; set; }
+
+        [Browsable(false)]
+        public int parentTableRow { get; set; }
+
+        public int parentTableColumn { get; set; }
+
         [ColumnName("Info")]
         public String info { get; set; }
 

@@ -97,6 +97,10 @@ namespace LaRottaO.OfficeTranslationTool.Services
 
                                     ShapeElement newElement = new ShapeElement();
 
+                                    newElement.belongsToATable = true;
+                                    newElement.parentTableRow = row;
+                                    newElement.parentTableColumn = col;
+
                                     newElement.indexOnPresentation = indexOnPresentationCounter;
                                     newElement.indexOnSlide = indexOnSlideCounter;
                                     newElement.slideNumber = slide.SlideNumber;
@@ -185,9 +189,32 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
         }
 
-        public (bool success, string errorReason) replaceShapeText(ShapeElement shapeElement)
+        public (bool success, string errorReason) replaceShapeText(ShapeElement shapeElement, Boolean useOriginalText, Boolean useTranslatedText, Boolean shrinkIfNecessary)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Slide slide = pptPresentation.Slides[shapeElement.slideNumber];
+                Shape shape = slide.Shapes[shapeElement.indexOnSlide + 1];
+
+                slide.Select();
+                shape.Select();
+
+                if (useTranslatedText)
+                {
+                    shape.TextFrame.TextRange.Text = shapeElement.newText;
+                }
+
+                if (useOriginalText)
+                {
+                    shape.TextFrame.TextRange.Text = shapeElement.originalText;
+                }
+
+                return (true, "");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.ToString());
+            }
         }
 
         public (bool success, string errorReason) saveChangesOnFile()

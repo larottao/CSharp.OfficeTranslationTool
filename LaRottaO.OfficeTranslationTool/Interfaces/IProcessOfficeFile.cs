@@ -22,7 +22,7 @@ namespace LaRottaO.OfficeTranslationTool.Interfaces
 
         (bool success, string errorReason) navigateToShapeOnFile(ShapeElement shapeElement);
 
-        (bool success, string errorReason) replaceShapeText(ShapeElement shapeElement);
+        (bool success, string errorReason) replaceShapeText(ShapeElement shapeElement, Boolean useOriginalText, Boolean useTranslatedText, Boolean shrinkIfNecessary);
 
         (bool success, string errorReason) saveChangesOnFile();
 
