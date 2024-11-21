@@ -1,0 +1,125 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{CDD9AF09-419B-4442-A07A-B72F15F77045}|LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool.csproj|c:\\repositorios\\larottao.officetranslationtool\\larottao.officetranslationtool\\utils\\loadprogramsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CDD9AF09-419B-4442-A07A-B72F15F77045}|LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool.csproj|solutionrelative:larottao.officetranslationtool\\utils\\loadprogramsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CDD9AF09-419B-4442-A07A-B72F15F77045}|LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool.csproj|c:\\repositorios\\larottao.officetranslationtool\\larottao.officetranslationtool\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CDD9AF09-419B-4442-A07A-B72F15F77045}|LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool.csproj|solutionrelative:larottao.officetranslationtool\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CDD9AF09-419B-4442-A07A-B72F15F77045}|LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool.csproj|c:\\repositorios\\larottao.officetranslationtool\\larottao.officetranslationtool\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{CDD9AF09-419B-4442-A07A-B72F15F77045}|LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool.csproj|solutionrelative:larottao.officetranslationtool\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CDD9AF09-419B-4442-A07A-B72F15F77045}|LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool.csproj|c:\\repositorios\\larottao.officetranslationtool\\larottao.officetranslationtool\\utils\\loadofficedocumentfromjson.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CDD9AF09-419B-4442-A07A-B72F15F77045}|LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool.csproj|solutionrelative:larottao.officetranslationtool\\utils\\loadofficedocumentfromjson.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CDD9AF09-419B-4442-A07A-B72F15F77045}|LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool.csproj|c:\\repositorios\\larottao.officetranslationtool\\larottao.officetranslationtool\\utils\\uihelpers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CDD9AF09-419B-4442-A07A-B72F15F77045}|LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool.csproj|solutionrelative:larottao.officetranslationtool\\utils\\uihelpers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CDD9AF09-419B-4442-A07A-B72F15F77045}|LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool.csproj|c:\\repositorios\\larottao.officetranslationtool\\larottao.officetranslationtool\\models\\programsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CDD9AF09-419B-4442-A07A-B72F15F77045}|LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool.csproj|solutionrelative:larottao.officetranslationtool\\models\\programsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainForm.cs",
+              "DocumentMoniker": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool\\MainForm.cs",
+              "RelativeDocumentMoniker": "LaRottaO.OfficeTranslationTool\\MainForm.cs",
+              "ToolTip": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool\\MainForm.cs",
+              "RelativeToolTip": "LaRottaO.OfficeTranslationTool\\MainForm.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAIA2wBgAAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-21T03:04:54.05Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MainForm.cs [Design]",
+              "DocumentMoniker": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool\\MainForm.cs",
+              "RelativeDocumentMoniker": "LaRottaO.OfficeTranslationTool\\MainForm.cs",
+              "ToolTip": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool\\MainForm.cs [Design]",
+              "RelativeToolTip": "LaRottaO.OfficeTranslationTool\\MainForm.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-21T03:04:13.447Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ProgramSettings.cs",
+              "DocumentMoniker": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool\\Models\\ProgramSettings.cs",
+              "RelativeDocumentMoniker": "LaRottaO.OfficeTranslationTool\\Models\\ProgramSettings.cs",
+              "ToolTip": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool\\Models\\ProgramSettings.cs",
+              "RelativeToolTip": "LaRottaO.OfficeTranslationTool\\Models\\ProgramSettings.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-21T02:57:42.731Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "LoadOfficeDocumentFromJson.cs",
+              "DocumentMoniker": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool\\Utils\\LoadOfficeDocumentFromJson.cs",
+              "RelativeDocumentMoniker": "LaRottaO.OfficeTranslationTool\\Utils\\LoadOfficeDocumentFromJson.cs",
+              "ToolTip": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool\\Utils\\LoadOfficeDocumentFromJson.cs",
+              "RelativeToolTip": "LaRottaO.OfficeTranslationTool\\Utils\\LoadOfficeDocumentFromJson.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-21T02:56:13.884Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UIHelpers.cs",
+              "DocumentMoniker": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool\\Utils\\UIHelpers.cs",
+              "RelativeDocumentMoniker": "LaRottaO.OfficeTranslationTool\\Utils\\UIHelpers.cs",
+              "ToolTip": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool\\Utils\\UIHelpers.cs",
+              "RelativeToolTip": "LaRottaO.OfficeTranslationTool\\Utils\\UIHelpers.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-21T02:55:49.569Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "LoadProgramSettings.cs",
+              "DocumentMoniker": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool\\Utils\\LoadProgramSettings.cs",
+              "RelativeDocumentMoniker": "LaRottaO.OfficeTranslationTool\\Utils\\LoadProgramSettings.cs",
+              "ToolTip": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool\\Utils\\LoadProgramSettings.cs",
+              "RelativeToolTip": "LaRottaO.OfficeTranslationTool\\Utils\\LoadProgramSettings.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAD4vw4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-21T02:55:43.885Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
