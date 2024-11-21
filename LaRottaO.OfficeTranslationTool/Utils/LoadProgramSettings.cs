@@ -12,30 +12,43 @@ namespace LaRottaO.OfficeTranslationTool.Utils
         {
             String settingsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings.json");
 
-            if (File.Exists(settingsFilePath))
+            if (!File.Exists(settingsFilePath))
             {
-                try
+                var defaultSettings = new ProgramSettings
                 {
-                    var json = File.ReadAllText(settingsFilePath);
-                    programSettings = JsonSerializer.Deserialize<ProgramSettings>(json);
+                    DeepLUrl = "https://insert-the-deepl-api-url.com",
+                    DeepLAuthKey = "insert-the-deepl-auth-key"
+                };
 
-                    if (programSettings == null)
-                    {
-                        return (false, $"Unable to load program settings. The .json file structure is not valid.");
-                    }
+                var defaultJson = JsonSerializer.Serialize(defaultSettings);
+                File.WriteAllText(settingsFilePath, defaultJson);
 
-                    deepLUrl = programSettings.DeepLUrl;
-                    deepLAuthKey = programSettings.DeepLAuthKey;
+                programSettings = defaultSettings;
+                deepLUrl = defaultSettings.DeepLUrl;
+                deepLAuthKey = defaultSettings.DeepLAuthKey;
 
-                    return (true, "");
-                }
-                catch (Exception ex)
-                {
-                    return (false, $"Unable to load program settings {ex.ToString()}");
-                }
+                return (true, "Default settings file created.");
             }
 
-            return (false, "File does not exists");
+            try
+            {
+                var json = File.ReadAllText(settingsFilePath);
+                programSettings = JsonSerializer.Deserialize<ProgramSettings>(json);
+
+                if (programSettings == null)
+                {
+                    return (false, $"Unable to load program settings. The .json file structure is not valid.");
+                }
+
+                deepLUrl = programSettings.DeepLUrl;
+                deepLAuthKey = programSettings.DeepLAuthKey;
+
+                return (true, "");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Unable to load program settings {ex.ToString()}");
+            }
         }
     }
 }
