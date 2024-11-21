@@ -199,14 +199,35 @@ namespace LaRottaO.OfficeTranslationTool.Services
                 slide.Select();
                 shape.Select();
 
-                if (useTranslatedText)
+                if (shapeElement.belongsToATable)
                 {
-                    shape.TextFrame.TextRange.Text = shapeElement.newText;
-                }
+                    Table table = shape.Table;
 
-                if (useOriginalText)
+                    Cell cell = table.Cell(shapeElement.parentTableRow, shapeElement.parentTableColumn);
+
+                    Shape cellShape = cell.Shape;
+
+                    if (useTranslatedText)
+                    {
+                        cellShape.TextFrame.TextRange.Text = shapeElement.newText;
+                    }
+
+                    if (useOriginalText)
+                    {
+                        cellShape.TextFrame.TextRange.Text = shapeElement.originalText;
+                    }
+                }
+                else
                 {
-                    shape.TextFrame.TextRange.Text = shapeElement.originalText;
+                    if (useTranslatedText)
+                    {
+                        shape.TextFrame.TextRange.Text = shapeElement.newText;
+                    }
+
+                    if (useOriginalText)
+                    {
+                        shape.TextFrame.TextRange.Text = shapeElement.originalText;
+                    }
                 }
 
                 return (true, "");
