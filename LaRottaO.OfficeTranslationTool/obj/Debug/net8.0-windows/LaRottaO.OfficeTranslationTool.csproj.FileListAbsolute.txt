@@ -45,3 +45,4 @@ C:\Repositorios\LaRottaO.OfficeTranslationTool\LaRottaO.OfficeTranslationTool\bi
 C:\Repositorios\LaRottaO.OfficeTranslationTool\LaRottaO.OfficeTranslationTool\obj\Debug\net8.0-windows\LaRottaO.F77F4801.Up2Date
 C:\Repositorios\LaRottaO.OfficeTranslationTool\LaRottaO.OfficeTranslationTool\obj\Debug\net8.0-windows\LaRottaO.OfficeTranslationTool.genruntimeconfig.cache
 C:\Repositorios\LaRottaO.OfficeTranslationTool\LaRottaO.OfficeTranslationTool\obj\Debug\net8.0-windows\ref\LaRottaO.OfficeTranslationTool.dll
+C:\Repositorios\LaRottaO.OfficeTranslationTool\LaRottaO.OfficeTranslationTool\obj\Debug\net8.0-windows\LaRottaO.OfficeTranslationTool.sourcelink.json

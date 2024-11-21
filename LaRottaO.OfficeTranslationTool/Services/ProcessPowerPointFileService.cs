@@ -73,7 +73,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
                             newElement.indexOnPresentation = indexOnPresentationCounter;
                             newElement.indexOnSlide = indexOnSlideCounter;
                             newElement.slideNumber = slide.SlideNumber;
-                            newElement.info = $"Slide {slide.SlideNumber} Item {shape.Id}";
+                            newElement.info = $"Slide {slide.SlideNumber} Text {shape.Id}";
                             newElement.originalText = textRange.Text.ToString();
 
                             shapesInPresentation.Add(newElement);
@@ -104,7 +104,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
                                     newElement.indexOnPresentation = indexOnPresentationCounter;
                                     newElement.indexOnSlide = indexOnSlideCounter;
                                     newElement.slideNumber = slide.SlideNumber;
-                                    newElement.info = $"Slide {slide.SlideNumber} Item {shape.Id}";
+                                    newElement.info = $"Slide {slide.SlideNumber} Table {shape.Id} {row},{col}";
                                     newElement.originalText = textRange.Text.ToString();
 
                                     shapesInPresentation.Add(newElement);

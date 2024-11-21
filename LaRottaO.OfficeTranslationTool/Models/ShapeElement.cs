@@ -19,6 +19,7 @@ namespace LaRottaO.OfficeTranslationTool.Models
         [Browsable(false)]
         public int parentTableRow { get; set; }
 
+        [Browsable(false)]
         public int parentTableColumn { get; set; }
 
         [ColumnName("Info")]
