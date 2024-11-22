@@ -294,6 +294,7 @@
             // 
             // buttonSaveConfig
             // 
+            buttonSaveConfig.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             buttonSaveConfig.FlatAppearance.BorderColor = Color.Silver;
             buttonSaveConfig.FlatAppearance.BorderSize = 2;
             buttonSaveConfig.FlatStyle = FlatStyle.Flat;

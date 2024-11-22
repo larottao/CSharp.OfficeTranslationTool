@@ -164,14 +164,15 @@ namespace LaRottaO.OfficeTranslationTool.Services
 
                 string key = createKey(selectedSourceLanguage, selectedTargetLanguage, term);
 
-                if (translationDictionary.TryGetValue(key, out var existingTranslation))
+                if (translationDictionary.TryGetValue(key, out var foundOnDictionary))
                 {
                     // Verify translation and isPartial match before deletion
-                    if (existingTranslation.translation.Equals(translation, StringComparison.OrdinalIgnoreCase) &&
-                        existingTranslation.isAPartialText == isPartial)
+                    if (foundOnDictionary.term.Equals(term) &&
+                        foundOnDictionary.translation.Equals(translation) &&
+                        foundOnDictionary.isAPartialText == isPartial)
                     {
                         translationDictionary.Remove(key);
-                        Debug.WriteLine($"Translation for term '{term}' has been deleted.");
+                        Debug.WriteLine($"Translation  '{foundOnDictionary.term} {foundOnDictionary.translation}' has been deleted.");
                         SaveDictionaryAsJson(translationDictionary);
                         return (true, "");
                     }

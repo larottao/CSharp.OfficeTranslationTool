@@ -8,20 +8,15 @@ using static LaRottaO.OfficeTranslationTool.GlobalVariables;
 
 namespace LaRottaO.OfficeTranslationTool
 {
-    internal class FormLogic
+    internal class FormLogic(MainForm mainForm)
     {
         private IProcessOfficeFile _iProcessOfficeFile;
 
-        private ILocalDictionary _iDictionary = new JsonDictionaryService();
+        private readonly ILocalDictionary _iDictionary = new JsonDictionaryService();
 
-        private ITranslation _itranslation = new TranslateUsingDeepLService();
+        private readonly ITranslation _itranslation = new TranslateUsingDeepLService();
 
-        private MainForm _mainForm;
-
-        public FormLogic(MainForm mainForm)
-        {
-            _mainForm = mainForm;
-        }
+        private readonly MainForm _mainForm = mainForm;
 
         public void test()
         {
