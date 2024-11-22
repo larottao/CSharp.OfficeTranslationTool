@@ -11,5 +11,9 @@ namespace LaRottaO.OfficeTranslationTool.Interfaces
         (bool success, string errorReason, bool termExists, string termTranslation) getTermFromLocalDictionary(string term);
 
         (bool success, string errorReason, List<ShapeElement> replacedExpressions) replacePartialExpressions(List<ShapeElement> elementsTobeExamined);
+
+        (bool success, string errorReason, List<SavedTranslation> partialExpressions) getPartialExpressionList();
+
+        (bool success, string errorReason) deleteFromLocalDictionary(string term, String translation, bool isPartial);
     }
 }

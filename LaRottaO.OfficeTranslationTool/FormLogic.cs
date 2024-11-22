@@ -16,11 +16,11 @@ namespace LaRottaO.OfficeTranslationTool
 
         private ITranslation _itranslation = new TranslateUsingDeepLService();
 
-        private DataGridView _dataGridView;
+        private MainForm _mainForm;
 
-        public FormLogic(DataGridView dataGridView)
+        public FormLogic(MainForm mainForm)
         {
-            _dataGridView = dataGridView;
+            _mainForm = mainForm;
         }
 
         public void test()
@@ -112,7 +112,7 @@ namespace LaRottaO.OfficeTranslationTool
 
             _iProcessOfficeFile.overwriteShapesStoredInMemory(loadResult.shapes);
 
-            _dataGridView.DataSource = _iProcessOfficeFile.getShapesStoredInMemory().shapes;
+            _mainForm.mainDataGridView.DataSource = _iProcessOfficeFile.getShapesStoredInMemory().shapes;
         }
 
         private void loadShapesFromOfficeFile()
@@ -127,7 +127,7 @@ namespace LaRottaO.OfficeTranslationTool
                 return;
             }
 
-            _dataGridView.DataSource = _iProcessOfficeFile.getShapesStoredInMemory().shapes;
+            _mainForm.mainDataGridView.DataSource = _iProcessOfficeFile.getShapesStoredInMemory().shapes;
 
             var saveResult = SaveOfficeDocumentAsJson.save(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
 
@@ -145,7 +145,7 @@ namespace LaRottaO.OfficeTranslationTool
             }
         }
 
-        public (Boolean success, String errorReason) saveNewTranslationTypedByUser(int row, int col, String newValue)
+        public (Boolean success, String errorReason) saveNewTranslationTypedByUserOnMainDgv(int row, int col, String newValue)
         {
             var resultGetChangedValue = _iProcessOfficeFile.getShapeFromMemoryAtIndex(row);
 
@@ -154,7 +154,7 @@ namespace LaRottaO.OfficeTranslationTool
                 return (false, resultGetChangedValue.errorReason);
             }
 
-            var addChangedValueToDic = addCorrectedWordToDictionary(resultGetChangedValue.shape.originalText, resultGetChangedValue.shape.newText);
+            var addChangedValueToDic = addTranslationToDictionary(resultGetChangedValue.shape.originalText, resultGetChangedValue.shape.newText, false);
 
             if (!addChangedValueToDic.success)
             {
@@ -171,7 +171,7 @@ namespace LaRottaO.OfficeTranslationTool
             return (true, resultGetChangedValue.errorReason);
         }
 
-        public (Boolean success, String errorReason) userClickedRow(int row, int col)
+        public (Boolean success, String errorReason) userClickedMainDataGridRow(int row, int col)
         {
             var resultGetChangedValue = _iProcessOfficeFile.getShapeFromMemoryAtIndex(row);
 
@@ -188,6 +188,35 @@ namespace LaRottaO.OfficeTranslationTool
             }
 
             return (true, "");
+        }
+
+        public (Boolean success, String errorReason) userClickedDgvPartialExpressionsRow(int row, int col)
+        {
+            SavedTranslation partialExpression = _iDictionary.getPartialExpressionList().partialExpressions[row];
+
+            _mainForm.textBoxNewPartialExpTerm.Text = partialExpression.term;
+            _mainForm.textBoxNewPartialExpTermTrans.Text = partialExpression.translation;
+
+            return (true, "");
+        }
+
+        public (Boolean success, String errorReason) deleteEntryFromPartialExpressionDic(string term, String translation)
+        {
+            var resultDelete = _iDictionary.deleteFromLocalDictionary(term, translation, true);
+
+            if (!resultDelete.success)
+            {
+                UIHelpers.showErrorMessage(resultDelete.errorReason);
+                return (false, resultDelete.errorReason);
+            }
+
+            populatePartialExpressionsDgv(_mainForm.dataGridViewPartialExpressions);
+
+            _mainForm.textBoxNewPartialExpTerm.Text = "";
+
+            _mainForm.textBoxNewPartialExpTermTrans.Text = "";
+
+            return resultDelete;
         }
 
         public void setDictionaryLanguage(String sourceLanguage, String targetLanguage)
@@ -215,9 +244,24 @@ namespace LaRottaO.OfficeTranslationTool
             return (!String.IsNullOrEmpty(selectedSourceLanguage)) && (!String.IsNullOrEmpty(selectedTargetLanguage));
         }
 
-        public (Boolean success, String errorReason) addCorrectedWordToDictionary(String term, String translation)
+        public (Boolean success, String errorReason) addTranslationToDictionary(String term, String translation, Boolean isPartial)
         {
-            return _iDictionary.addOrUpdateLocalDictionary(term, translation, false);
+            var addResult = _iDictionary.addOrUpdateLocalDictionary(term, translation, isPartial);
+
+            if (!addResult.success)
+            {
+                UIHelpers.showErrorMessage(addResult.errorReason);
+                return addResult;
+            }
+
+            if (isPartial)
+            {
+                populatePartialExpressionsDgv(_mainForm.dataGridViewPartialExpressions);
+                _mainForm.textBoxNewPartialExpTerm.Text = "";
+                _mainForm.textBoxNewPartialExpTermTrans.Text = "";
+            }
+
+            return addResult;
         }
 
         public (Boolean success, String errorReason) translateAllShapeElements(String sourceLanguage, String targetLanguage)
@@ -240,7 +284,7 @@ namespace LaRottaO.OfficeTranslationTool
                     continue;
                 }
 
-                UIHelpers.setCursorOnDataGridRowThreadSafe(_dataGridView, shapeUnderTranslation.indexOnPresentation, true);
+                UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
 
                 //Check if the term exists in local dictionary as a complete word
 
@@ -256,7 +300,7 @@ namespace LaRottaO.OfficeTranslationTool
                 {
                     Debug.WriteLine($"{shapeUnderTranslation.originalText} found on local dictionary!");
                     shapeUnderTranslation.newText = localDicResult.termTranslation;
-                    _dataGridView.Refresh();
+                    _mainForm.mainDataGridView.Refresh();
                     continue;
                 }
 
@@ -275,7 +319,7 @@ namespace LaRottaO.OfficeTranslationTool
 
                 shapeUnderTranslation.newText = apiResult.translatedText;
                 _iDictionary.addOrUpdateLocalDictionary(shapeUnderTranslation.originalText, apiResult.translatedText, false);
-                _dataGridView.Refresh();
+                _mainForm.mainDataGridView.Refresh();
             }
 
             //Checks for partial text and replaces
@@ -288,7 +332,7 @@ namespace LaRottaO.OfficeTranslationTool
             }
 
             _iProcessOfficeFile.overwriteShapesStoredInMemory(partialReplaceResult.replacedExpressions);
-            _dataGridView.Refresh();
+            _mainForm.mainDataGridView.Refresh();
 
             SaveOfficeDocumentAsJson.save(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
 
@@ -315,7 +359,7 @@ namespace LaRottaO.OfficeTranslationTool
                     continue;
                 }
 
-                UIHelpers.setCursorOnDataGridRowThreadSafe(_dataGridView, shapeUnderTranslation.indexOnPresentation, true);
+                UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
 
                 _iProcessOfficeFile.navigateToShapeOnFile(shapeUnderTranslation);
 
@@ -332,6 +376,12 @@ namespace LaRottaO.OfficeTranslationTool
             }
 
             return (true, "");
+        }
+
+        public void populatePartialExpressionsDgv(DataGridView dataGridView)
+        {
+            dataGridView.DataSource = _iDictionary.getPartialExpressionList().partialExpressions;
+            dataGridView.Refresh();
         }
     }
 }

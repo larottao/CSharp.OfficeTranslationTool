@@ -13,10 +13,15 @@ namespace LaRottaO.OfficeTranslationTool
         public MainForm()
         {
             InitializeComponent();
-            formLogic = new FormLogic(dataGridView);
-            dataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-            dataGridView.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            dataGridView.MultiSelect = false;
+
+            formLogic = new FormLogic(this);
+
+            mainDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            mainDataGridView.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            mainDataGridView.MultiSelect = false;
+            mainDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            dataGridViewPartialExpressions.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -46,11 +51,11 @@ namespace LaRottaO.OfficeTranslationTool
 
         private void dataGridView_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
         {
-            for (int i = 0; i < dataGridView.Rows.Count; i++)
+            for (int i = 0; i < mainDataGridView.Rows.Count; i++)
             {
                 if (i % 2 == 0)
                 {
-                    dataGridView.Rows[i].DefaultCellStyle.BackColor = Color.LightBlue;
+                    mainDataGridView.Rows[i].DefaultCellStyle.BackColor = Color.LightBlue;
                 }
             }
         }
@@ -69,7 +74,7 @@ namespace LaRottaO.OfficeTranslationTool
 
         private void dataGridView_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
-            foreach (DataGridViewColumn column in dataGridView.Columns)
+            foreach (DataGridViewColumn column in mainDataGridView.Columns)
             {
                 var property = typeof(ShapeElement).GetProperty(column.DataPropertyName);
                 if (property != null)
@@ -88,7 +93,6 @@ namespace LaRottaO.OfficeTranslationTool
                 }
             }
         }
-     
 
         private String? previousCellValue;
 
@@ -99,13 +103,13 @@ namespace LaRottaO.OfficeTranslationTool
                 UIHelpers.showInformationMessage("Please select the Source and Target languages first.");
 
                 //TODO this doesnt work
-                dataGridView.ClearSelection();
+                mainDataGridView.ClearSelection();
                 return;
             }
 
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
-                var cell = dataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                var cell = mainDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
 
                 previousCellValue = cell.Value?.ToString();
             }
@@ -115,13 +119,13 @@ namespace LaRottaO.OfficeTranslationTool
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
-                var cell = dataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                var cell = mainDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
 
                 string? newValue = cell.Value?.ToString();
 
                 if (newValue != null && !newValue.Equals(previousCellValue))
                 {
-                    formLogic.saveNewTranslationTypedByUser(e.RowIndex, e.ColumnIndex, newValue);
+                    formLogic.saveNewTranslationTypedByUserOnMainDgv(e.RowIndex, e.ColumnIndex, newValue);
                 }
             }
         }
@@ -134,7 +138,7 @@ namespace LaRottaO.OfficeTranslationTool
         private void comboBoxDestLanguage_SelectedIndexChanged(object sender, EventArgs e)
         {
             formLogic.setDictionaryLanguage(comboBoxSourceLanguage.Text, comboBoxDestLanguage.Text);
-        }     
+        }
 
         private void buttonTranslateAll_Click(object sender, EventArgs e)
         {
@@ -156,16 +160,15 @@ namespace LaRottaO.OfficeTranslationTool
             }
         }
 
-        private void dataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
+        private void mainDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if (dataGridView.Rows.Count == 0)
+            if (mainDataGridView.Rows.Count == 0)
             {
                 return;
             }
 
-            formLogic.userClickedRow(e.RowIndex, e.ColumnIndex);
+            formLogic.userClickedMainDataGridRow(e.RowIndex, e.ColumnIndex);
         }
-      
 
         private void buttonApplyChanges_Click(object sender, EventArgs e)
         {
@@ -195,6 +198,53 @@ namespace LaRottaO.OfficeTranslationTool
             {
                 UIHelpers.showErrorMessage(replaceResult.errorReason);
             }
+        }
+
+        private void buttonLunchConfig_Click(object sender, EventArgs e)
+        {
+            if (!formLogic.areBothSourceAndDestintionLanguagesSet())
+            {
+                UIHelpers.showInformationMessage("Please select the Source and Target languages first.");
+                return;
+            }
+
+            formLogic.populatePartialExpressionsDgv(dataGridViewPartialExpressions);
+
+            setConfigPanelElementsVisibility(true);
+        }
+
+        private void setConfigPanelElementsVisibility(Boolean state)
+        {
+            buttonLunchConfig.Visible = !state;
+            buttonSaveConfig.Visible = state;
+            tabControlConfig.Visible = state;
+            comboBoxSourceLanguage.Enabled = !state;
+            comboBoxDestLanguage.Enabled = !state;
+        }
+
+        private void buttonSaveConfig_Click(object sender, EventArgs e)
+        {
+            setConfigPanelElementsVisibility(false);
+        }
+
+        private void buttonAddPartialExpressionToDic_Click(object sender, EventArgs e)
+        {
+            formLogic.addTranslationToDictionary(textBoxNewPartialExpTerm.Text.Trim(), textBoxNewPartialExpTermTrans.Text.Trim(), true);
+        }
+
+        private void dataGridViewPartialExpressions_RowEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dataGridViewPartialExpressions.Rows.Count == 0)
+            {
+                return;
+            }
+
+            formLogic.userClickedDgvPartialExpressionsRow(e.RowIndex, e.ColumnIndex);
+        }
+
+        private void buttonDeletePartialExpFromDic_Click(object sender, EventArgs e)
+        {
+            formLogic.deleteEntryFromPartialExpressionDic(textBoxNewPartialExpTerm.Text.Trim(), textBoxNewPartialExpTermTrans.Text.Trim());
         }
     }
 }

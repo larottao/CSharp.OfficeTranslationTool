@@ -50,6 +50,16 @@ namespace LaRottaO.OfficeTranslationTool.Services
                     return (false, "The text cannot be empty");
                 }
 
+                string key = createKey(selectedSourceLanguage, selectedTargetLanguage, term);
+
+                if (translationDictionary.TryGetValue(key, out var existingTranslation))
+                {
+                    if (!existingTranslation.term.Equals(term, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Debug.WriteLine($"Overwriting existing translation for term '{term}'. Old: '{existingTranslation.translation}', New: '{translation}'");
+                    }
+                }
+
                 SavedTranslation savedTranslation = new SavedTranslation
                 {
                     sourceLanguage = selectedSourceLanguage,
@@ -59,7 +69,6 @@ namespace LaRottaO.OfficeTranslationTool.Services
                     isAPartialText = isPartial
                 };
 
-                string key = createKey(selectedSourceLanguage, selectedTargetLanguage, term);
                 translationDictionary[key] = savedTranslation;
                 Debug.WriteLine($"Translation {savedTranslation.term} {savedTranslation.translation} saved for future use.");
                 SaveDictionaryAsJson(translationDictionary);
@@ -108,22 +117,12 @@ namespace LaRottaO.OfficeTranslationTool.Services
         {
             Debug.WriteLine("Replacing partial expressions...");
 
-            var partialTextEntries = new List<SavedTranslation>();
-
-            foreach (var entry in translationDictionary.Values)
-            {
-                if (entry.isAPartialText)
-                {
-                    partialTextEntries.Add(entry);
-                }
-            }
-
             foreach (ShapeElement element in elementsTobeExamined)
             {
                 if (element.newText != null)
 
                 {
-                    foreach (SavedTranslation partialWordTrans in partialTextEntries)
+                    foreach (SavedTranslation partialWordTrans in getPartialExpressionList().partialExpressions)
                     {
                         if (element.newText.Contains(partialWordTrans.term))
                         {
@@ -135,6 +134,61 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
 
             return (true, "", elementsTobeExamined);
+        }
+
+        public (bool success, string errorReason, List<SavedTranslation> partialExpressions) getPartialExpressionList()
+        {
+            initializeLocalDictionary();
+
+            var partialTextEntries = new List<SavedTranslation>();
+
+            foreach (var entry in translationDictionary.Values)
+            {
+                if (entry.isAPartialText)
+                {
+                    partialTextEntries.Add(entry);
+                }
+            }
+
+            return (true, "", partialTextEntries.OrderBy(element => element.term).ToList());
+        }
+
+        public (bool success, string errorReason) deleteFromLocalDictionary(string term, string translation, bool isPartial)
+        {
+            try
+            {
+                if (String.IsNullOrEmpty(term) || String.IsNullOrEmpty(translation))
+                {
+                    return (false, "The term or translation cannot be empty");
+                }
+
+                string key = createKey(selectedSourceLanguage, selectedTargetLanguage, term);
+
+                if (translationDictionary.TryGetValue(key, out var existingTranslation))
+                {
+                    // Verify translation and isPartial match before deletion
+                    if (existingTranslation.translation.Equals(translation, StringComparison.OrdinalIgnoreCase) &&
+                        existingTranslation.isAPartialText == isPartial)
+                    {
+                        translationDictionary.Remove(key);
+                        Debug.WriteLine($"Translation for term '{term}' has been deleted.");
+                        SaveDictionaryAsJson(translationDictionary);
+                        return (true, "");
+                    }
+                    else
+                    {
+                        return (false, "The provided translation or partial flag does not match the existing record.");
+                    }
+                }
+                else
+                {
+                    return (false, "The specified term was not found in the dictionary.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Unable to delete translation from dictionary: {ex.ToString()}");
+            }
         }
     }
 }
