@@ -202,6 +202,7 @@
             dataGridViewPartialExpressions.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             dataGridViewPartialExpressions.Size = new Size(454, 389);
             dataGridViewPartialExpressions.TabIndex = 10;
+            dataGridViewPartialExpressions.CellContentClick += dataGridViewPartialExpressions_CellContentClick;
             dataGridViewPartialExpressions.RowEnter += dataGridViewPartialExpressions_RowEnter;
             // 
             // tabControlConfig

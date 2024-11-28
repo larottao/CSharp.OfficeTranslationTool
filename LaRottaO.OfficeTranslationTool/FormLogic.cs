@@ -23,12 +23,12 @@ namespace LaRottaO.OfficeTranslationTool
             Debug.WriteLine(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
         }
 
-        public void openOfficeFile()
+        public void launchSelectFileDialog()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = "Office Files|*.*;*.*",
-                Title = "Select an Office File to translate"
+                Filter = "Office & Json Files|*.*;*.*",
+                Title = "Select a translation project or Office File to translate"
             };
 
             if (openFileDialog.ShowDialog() != DialogResult.OK)
@@ -41,15 +41,38 @@ namespace LaRottaO.OfficeTranslationTool
                 UIHelpers.offerToSaveDocumentBeforeExiting(_iProcessOfficeFile);
             }
 
-            string extension = Path.GetExtension(openFileDialog.FileName);
+            openOfficeFile(openFileDialog.FileName);
+        }
+
+        public void openOfficeFile(String fileName)
+        {
+            string extension = Path.GetExtension(fileName);
+
+            if (!File.Exists(fileName))
+            {
+                UIHelpers.showErrorMessage($"The associated file {fileName} was not found.");
+                return;
+            }
 
             //TODO: Add Word support
 
             switch (extension.ToLower())
             {
+                case ".json":
+
+                    //TODO open the associated file
+
+                    String associatedFileName = fileName.Replace(".json", "");
+
+                    openOfficeFile(associatedFileName);
+
+                    return;
+
                 case ".pptx":
                 case ".ppt":
+
                     _iProcessOfficeFile = new ProcessPowerPointFileService();
+
                     break;
 
                 case ".xlsx":
@@ -62,7 +85,7 @@ namespace LaRottaO.OfficeTranslationTool
                     return;
             }
 
-            currentOfficeDocPath = openFileDialog.FileName;
+            currentOfficeDocPath = fileName;
             var launchAppResult = _iProcessOfficeFile.launchOfficeProgramInstance();
 
             if (!launchAppResult.success)
@@ -168,6 +191,11 @@ namespace LaRottaO.OfficeTranslationTool
 
         public (Boolean success, String errorReason) userClickedMainDataGridRow(int row, int col)
         {
+            if (replaceInProgress)
+            {
+                return (false, "Replace in progress");
+            }
+
             var resultGetChangedValue = _iProcessOfficeFile.getShapeFromMemoryAtIndex(row);
 
             if (!resultGetChangedValue.success)
@@ -265,7 +293,7 @@ namespace LaRottaO.OfficeTranslationTool
 
             //Iterate on all items
 
-            foreach (ShapeElement shapeUnderTranslation in _iProcessOfficeFile.getShapesStoredInMemory().shapes)
+            foreach (PptShape shapeUnderTranslation in _iProcessOfficeFile.getShapesStoredInMemory().shapes)
             {
                 //Check if the string is not a number, blank or pure symbols
 
@@ -334,41 +362,71 @@ namespace LaRottaO.OfficeTranslationTool
             return (true, "");
         }
 
-        public (Boolean success, String errorReason) applyChangesOnOfficeFile(Boolean useOriginalText, Boolean useTranslatedText)
+        public async Task<(Boolean success, String errorReason)> applyChangesOnOfficeFile(Boolean useOriginalText, Boolean useTranslatedText)
         {
-            _iDictionary.initializeLocalDictionary();
-
-            //Iterate on all items
-
-            foreach (ShapeElement shapeUnderTranslation in _iProcessOfficeFile.getShapesStoredInMemory().shapes)
+            await Task.Run(() =>
             {
-                //Check if the string is not a number, blank or pure symbols
+                ///////////////////
 
-                if (string.IsNullOrEmpty(shapeUnderTranslation.originalText))
+                _iDictionary.initializeLocalDictionary();
+
+                //Iterate on all items
+
+                foreach (PptShape shapeUnderTranslation in _iProcessOfficeFile.getShapesStoredInMemory().shapes)
                 {
-                    continue;
-                }
+                    //Check if the string is not a number, blank or pure symbols
 
-                if (!shapeUnderTranslation.originalText.Any(char.IsLetter))
-                {
-                    continue;
-                }
-
-                UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
-
-                _iProcessOfficeFile.navigateToShapeOnFile(shapeUnderTranslation);
-
-                var replaceResult = _iProcessOfficeFile.replaceShapeText(shapeUnderTranslation, useOriginalText, useTranslatedText, true);
-
-                if (!replaceResult.success)
-                {
-                    DialogResult dialogResult = UIHelpers.showYesNoQuestion($"{replaceResult.errorReason} do you want to continue?");
-                    if (dialogResult == DialogResult.No)
+                    if (string.IsNullOrEmpty(shapeUnderTranslation.originalText))
                     {
-                        return (false, replaceResult.errorReason);
+                        continue;
+                    }
+
+                    if (!shapeUnderTranslation.originalText.Any(char.IsLetter))
+                    {
+                        continue;
+                    }
+
+                    UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
+
+                    var navResult = _iProcessOfficeFile.navigateToShapeOnFile(shapeUnderTranslation);
+
+                    //*****************************************************************************
+                    //If it fails it cannot continue, because the shape to replace would be null.
+                    //You can abort all, or continue with the next one
+                    //******************************************************************************
+
+                    if (!navResult.success)
+                    {
+                        DialogResult dialogResult = UIHelpers.showYesNoQuestion($"Failed to find shape to replace. {navResult.errorReason} do you want to continue?");
+
+                        if (dialogResult == DialogResult.Yes)
+                        {
+                            continue;
+                        }
+                        else if (dialogResult == DialogResult.No)
+                        {
+                            return (false, navResult.errorReason);
+                        }
+                    }
+
+                    shapeUnderTranslation.originalShape = navResult.shape;
+
+                    var replaceResult = _iProcessOfficeFile.replaceShapeText(shapeUnderTranslation, useOriginalText, useTranslatedText, true);
+
+                    if (!replaceResult.success)
+                    {
+                        DialogResult dialogResult = UIHelpers.showYesNoQuestion($"Failed to replace shape text. {replaceResult.errorReason} Do you want to continue?");
+                        if (dialogResult == DialogResult.No)
+                        {
+                            return (false, navResult.errorReason);
+                        }
                     }
                 }
-            }
+
+                return (true, "");
+
+                ///////////////////
+            });
 
             return (true, "");
         }

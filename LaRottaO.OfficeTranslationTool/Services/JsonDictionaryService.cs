@@ -113,11 +113,11 @@ namespace LaRottaO.OfficeTranslationTool.Services
         }
 
         //TODO HORRIBLY INNEFICIENT
-        public (bool success, string errorReason, List<ShapeElement> replacedExpressions) replacePartialExpressions(List<ShapeElement> elementsTobeExamined)
+        public (bool success, string errorReason, List<PptShape> replacedExpressions) replacePartialExpressions(List<PptShape> elementsTobeExamined)
         {
             Debug.WriteLine("Replacing partial expressions...");
 
-            foreach (ShapeElement element in elementsTobeExamined)
+            foreach (PptShape element in elementsTobeExamined)
             {
                 if (element.newText != null)
 

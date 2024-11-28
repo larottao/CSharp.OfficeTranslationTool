@@ -1,4 +1,5 @@
 ﻿using LaRottaO.OfficeTranslationTool.Models;
+using Microsoft.Office.Interop.PowerPoint;
 
 namespace LaRottaO.OfficeTranslationTool.Interfaces
 {
@@ -14,15 +15,15 @@ namespace LaRottaO.OfficeTranslationTool.Interfaces
 
         (bool success, string errorReason) extractShapesFromFile();
 
-        (bool success, string errorReason) overwriteShapesStoredInMemory(List<ShapeElement> shapes);
+        (bool success, string errorReason) overwriteShapesStoredInMemory(List<PptShape> shapes);
 
-        (bool success, string errorReason, List<ShapeElement> shapes) getShapesStoredInMemory();
+        (bool success, string errorReason, List<PptShape> shapes) getShapesStoredInMemory();
 
-        (bool success, string errorReason, ShapeElement shape) getShapeFromMemoryAtIndex(int index);
+        (bool success, string errorReason, PptShape shape) getShapeFromMemoryAtIndex(int index);
 
-        (bool success, string errorReason) navigateToShapeOnFile(ShapeElement shapeElement);
+        (bool success, string errorReason, Shape? shape) navigateToShapeOnFile(PptShape shape);
 
-        (bool success, string errorReason) replaceShapeText(ShapeElement shapeElement, Boolean useOriginalText, Boolean useTranslatedText, Boolean shrinkIfNecessary);
+        (bool success, string errorReason) replaceShapeText(PptShape pptShape, Boolean useOriginalText, Boolean useTranslatedText, Boolean shrinkIfNecessary);
 
         (bool success, string errorReason) saveChangesOnFile();
 

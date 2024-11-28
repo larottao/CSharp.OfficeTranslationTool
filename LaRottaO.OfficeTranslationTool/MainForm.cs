@@ -42,7 +42,7 @@ namespace LaRottaO.OfficeTranslationTool
 
         private void buttonOpenOfficeFile_Click(object sender, EventArgs e)
         {
-            formLogic.openOfficeFile();
+            formLogic.launchSelectFileDialog();
         }
 
         //**************************************************
@@ -76,7 +76,7 @@ namespace LaRottaO.OfficeTranslationTool
         {
             foreach (DataGridViewColumn column in mainDataGridView.Columns)
             {
-                var property = typeof(ShapeElement).GetProperty(column.DataPropertyName);
+                var property = typeof(PptShape).GetProperty(column.DataPropertyName);
                 if (property != null)
                 {
                     // Check for [Browsable(false)]
@@ -98,6 +98,11 @@ namespace LaRottaO.OfficeTranslationTool
 
         private void dataGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
+            if (replaceInProgress)
+            {
+                return;
+            }
+
             if (!formLogic.areBothSourceAndDestintionLanguagesSet())
             {
                 UIHelpers.showInformationMessage("Please select the Source and Target languages first.");
@@ -117,6 +122,11 @@ namespace LaRottaO.OfficeTranslationTool
 
         private void dataGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
+            if (replaceInProgress)
+            {
+                return;
+            }
+
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
                 var cell = mainDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
@@ -162,6 +172,11 @@ namespace LaRottaO.OfficeTranslationTool
 
         private void mainDataGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
+            if (replaceInProgress)
+            {
+                return;
+            }
+
             if (mainDataGridView.Rows.Count == 0)
             {
                 return;
@@ -170,9 +185,11 @@ namespace LaRottaO.OfficeTranslationTool
             formLogic.userClickedMainDataGridRow(e.RowIndex, e.ColumnIndex);
         }
 
-        private void buttonApplyChanges_Click(object sender, EventArgs e)
+        private async void buttonApplyChanges_Click(object sender, EventArgs e)
         {
-            var replaceResult = formLogic.applyChangesOnOfficeFile(false, true);
+            replaceInProgress = true;
+
+            var replaceResult = await formLogic.applyChangesOnOfficeFile(false, true);
 
             if (replaceResult.success)
             {
@@ -183,11 +200,13 @@ namespace LaRottaO.OfficeTranslationTool
             {
                 UIHelpers.showErrorMessage(replaceResult.errorReason);
             }
+
+            replaceInProgress = false;
         }
 
-        private void buttonRevertChanges_Click(object sender, EventArgs e)
+        private async void buttonRevertChanges_Click(object sender, EventArgs e)
         {
-            var replaceResult = formLogic.applyChangesOnOfficeFile(true, false);
+            var replaceResult = await formLogic.applyChangesOnOfficeFile(true, false);
 
             if (replaceResult.success)
             {
@@ -245,6 +264,10 @@ namespace LaRottaO.OfficeTranslationTool
         private void buttonDeletePartialExpFromDic_Click(object sender, EventArgs e)
         {
             formLogic.deleteEntryFromPartialExpressionDic(textBoxNewPartialExpTerm.Text.Trim(), textBoxNewPartialExpTermTrans.Text.Trim());
+        }
+
+        private void dataGridViewPartialExpressions_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
         }
     }
 }
