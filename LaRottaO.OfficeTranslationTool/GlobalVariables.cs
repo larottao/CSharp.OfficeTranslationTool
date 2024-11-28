@@ -6,6 +6,8 @@
         public static String selectedSourceLanguage { get; set; } = "";
         public static String selectedTargetLanguage { get; set; } = "";
         public static Boolean replaceInProgress { get; set; } = false;
+
+        public static string? jsonDictionaryPath { get; set; } = "";
         public static String deepLUrl { get; set; } = "https://api-free.deepl.com/v2/translate";
 
         //TODO REMOVE AND LOAD FROM FILE

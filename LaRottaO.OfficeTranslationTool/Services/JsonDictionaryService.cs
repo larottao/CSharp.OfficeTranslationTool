@@ -11,12 +11,19 @@ namespace LaRottaO.OfficeTranslationTool.Services
 {
     internal class JsonDictionaryService : ILocalDictionary
     {
-        private string? jsonDictionaryPath;
         private Dictionary<string, SavedTranslation> translationDictionary;
 
         public (bool success, string errorReason) initializeLocalDictionary()
         {
-            jsonDictionaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{selectedSourceLanguage}_{selectedTargetLanguage}_saved_translations.json");
+            String newDictionaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{selectedSourceLanguage}_{selectedTargetLanguage}_saved_translations.json");
+
+            if (jsonDictionaryPath.Equals(newDictionaryPath))
+            {
+                return (true, "");
+            }
+
+            jsonDictionaryPath = newDictionaryPath;
+
             translationDictionary = LoadTranslations();
 
             Debug.WriteLine($"Dictionary set to: {selectedSourceLanguage} {selectedTargetLanguage}");

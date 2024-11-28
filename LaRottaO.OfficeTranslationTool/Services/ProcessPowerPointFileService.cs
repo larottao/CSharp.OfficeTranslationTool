@@ -4,6 +4,7 @@ using Microsoft.Office.Core;
 using Microsoft.Office.Interop.PowerPoint;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using static LaRottaO.OfficeTranslationTool.GlobalVariables;
 using Application = Microsoft.Office.Interop.PowerPoint.Application;
 using Shape = Microsoft.Office.Interop.PowerPoint.Shape;
@@ -137,6 +138,151 @@ namespace LaRottaO.OfficeTranslationTool.Services
 
                 indexOnPresentationCounter++;
             } //End foreach (Slide slide in pptPresentation.Slides)
+
+            return (true, "");
+        }
+
+        public (bool success, string errorReason) extractShapesFromFile222()
+        {
+            shapesInPresentation = new List<PptShape>();
+
+            int indexOnPresentationCounter = 0;
+
+            foreach (Slide slide in pptPresentation.Slides)
+            {
+                foreach (Microsoft.Office.Interop.PowerPoint.Shape shape in slide.Shapes)
+                {
+                    try
+                    {
+                        if (shape.Type == Microsoft.Office.Core.MsoShapeType.msoGroup)
+                        {
+                            shape.Ungroup();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"DEBUG: Unable to ungroup the shape with Id: {slide.SlideID} on Slide: {slide.SlideNumber}. Reason: {ex.ToString()}");
+                    }
+                }
+
+                int indexOnSlideCounter = 0;
+
+                foreach (Shape shape in slide.Shapes)
+                {
+                    if (shape.HasTextFrame == MsoTriState.msoTrue)
+                    {
+                        if (shape.TextFrame.HasText == MsoTriState.msoTrue)
+                        {
+                            var textRange = shape.TextFrame.TextRange;
+
+                            PptShape newElement = new PptShape();
+
+                            newElement.internalId = shape.Id;
+
+                            newElement.belongsToATable = false;
+                            newElement.indexOnPresentation = indexOnPresentationCounter;
+                            newElement.indexOnSlide = indexOnSlideCounter;
+                            newElement.slideNumber = slide.SlideNumber;
+                            newElement.info = $"Slide {slide.SlideNumber} Text {shape.Id}";
+
+                            // Extract formatted text including bullets, line breaks, and styles
+                            StringBuilder formattedText = new StringBuilder();
+                            for (int i = 1; i <= textRange.Runs().Count; i++)
+                            {
+                                var run = textRange.Runs(i);
+                                if (run.ParagraphFormat.Bullet.Type != PpBulletType.ppBulletNone)
+                                {
+                                    formattedText.Append("\u2022 "); // Append bullet
+                                }
+
+                                formattedText.Append(run.Text); // Append the text of the run
+
+                                /*
+                                // Handle bold/italic formatting
+                                if (run.Font.Bold == MsoTriState.msoTrue)
+                                    formattedText.Append(" [Bold]");
+                                if (run.Font.Italic == MsoTriState.msoTrue)
+                                    formattedText.Append(" [Italic]");
+
+                                // Append newline for paragraph separation
+                                if (i < textRange.Runs().Count)
+                                    formattedText.AppendLine();
+                                 */
+                            }
+
+                            newElement.originalText = formattedText.ToString();
+
+                            shapesInPresentation.Add(newElement);
+                        }
+                    }
+                    else if (shape.HasTable == MsoTriState.msoTrue)
+                    {
+                        Table table = shape.Table;
+
+                        for (int col = 1; col <= table.Columns.Count; col++)
+                        {
+                            for (int row = 1; row <= table.Rows.Count; row++)
+                            {
+                                Cell cell = table.Cell(row, col);
+
+                                Microsoft.Office.Interop.PowerPoint.Shape cellShape = cell.Shape;
+
+                                if (cellShape.HasTextFrame == MsoTriState.msoTrue && cellShape.TextFrame.HasText == MsoTriState.msoTrue)
+                                {
+                                    var textRange = cellShape.TextFrame.TextRange;
+
+                                    PptShape newElement = new PptShape();
+
+                                    newElement.internalId = shape.Id;
+
+                                    newElement.belongsToATable = true;
+                                    newElement.parentTableRow = row;
+                                    newElement.parentTableColumn = col;
+
+                                    newElement.indexOnPresentation = indexOnPresentationCounter;
+                                    newElement.indexOnSlide = indexOnSlideCounter;
+                                    newElement.slideNumber = slide.SlideNumber;
+                                    newElement.info = $"Slide {slide.SlideNumber} Table {shape.Id} {row},{col}";
+
+                                    // Extract formatted text including bullets, line breaks, and styles
+                                    StringBuilder formattedText = new StringBuilder();
+                                    for (int i = 1; i <= textRange.Runs().Count; i++)
+                                    {
+                                        var run = textRange.Runs(i);
+                                        if (run.ParagraphFormat.Bullet.Type != PpBulletType.ppBulletNone)
+                                        {
+                                            formattedText.Append("\u2022 "); // Append bullet
+                                        }
+
+                                        formattedText.Append(run.Text); // Append the text of the run
+
+                                        /*
+                                        // Handle bold/italic formatting
+                                        if (run.Font.Bold == MsoTriState.msoTrue)
+                                            formattedText.Append(" [Bold]");
+                                        if (run.Font.Italic == MsoTriState.msoTrue)
+                                            formattedText.Append(" [Italic]");
+
+                                        // Append newline for paragraph separation
+                                        if (i < textRange.Runs().Count)
+                                            formattedText.AppendLine();
+
+                                          */
+                                    }
+
+                                    newElement.originalText = formattedText.ToString();
+
+                                    shapesInPresentation.Add(newElement);
+                                }
+                            }
+                        }
+                    }
+
+                    indexOnSlideCounter++;
+                } // End foreach (Shape shape in slide.Shapes)
+
+                indexOnPresentationCounter++;
+            } // End foreach (Slide slide in pptPresentation.Slides)
 
             return (true, "");
         }
