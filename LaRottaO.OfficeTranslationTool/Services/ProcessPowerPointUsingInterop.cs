@@ -11,7 +11,7 @@ using Shape = Microsoft.Office.Interop.PowerPoint.Shape;
 
 namespace LaRottaO.OfficeTranslationTool.Services
 {
-    internal class ProcessPowerPointFileService : IProcessOfficeFile
+    internal class ProcessPowerPointUsingInterop : IProcessOfficeFile
     {
         private Application pptApp;
         private Presentation pptPresentation;

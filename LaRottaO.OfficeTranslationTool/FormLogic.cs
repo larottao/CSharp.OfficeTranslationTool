@@ -71,7 +71,7 @@ namespace LaRottaO.OfficeTranslationTool
                 case ".pptx":
                 case ".ppt":
 
-                    _iProcessOfficeFile = new ProcessPowerPointFileService();
+                    _iProcessOfficeFile = new ProcessPowerPointUsingInterop();
 
                     break;
 
