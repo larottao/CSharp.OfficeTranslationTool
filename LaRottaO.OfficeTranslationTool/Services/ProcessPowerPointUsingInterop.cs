@@ -52,94 +52,102 @@ namespace LaRottaO.OfficeTranslationTool.Services
 
         public (bool success, string errorReason) extractShapesFromFile()
         {
-            shapesInPresentation = new List<PptShape>();
-
-            int indexOnPresentationCounter = 0;
-
-            foreach (Slide slide in pptPresentation.Slides)
+            try
             {
-                foreach (Microsoft.Office.Interop.PowerPoint.Shape shape in slide.Shapes)
+                shapesInPresentation = new List<PptShape>();
+
+                int indexOnPresentationCounter = 0;
+
+                foreach (Slide slide in pptPresentation.Slides)
                 {
-                    try
+                    foreach (Microsoft.Office.Interop.PowerPoint.Shape shape in slide.Shapes)
                     {
-                        if (shape.Type == Microsoft.Office.Core.MsoShapeType.msoGroup)
+                        try
                         {
-                            shape.Ungroup();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"DEBUG: Unable to ungroup the shape with Id: {slide.SlideID} on Slide: {slide.SlideNumber}. Reason: {ex.ToString()}");
-                    }
-                }
-
-                int indexOnSlideCounter = 0;
-
-                foreach (Shape shape in slide.Shapes)
-                {
-                    if (shape.HasTextFrame == MsoTriState.msoTrue)
-                    {
-                        if (shape.TextFrame.HasText == MsoTriState.msoTrue)
-                        {
-                            var textRange = shape.TextFrame.TextRange;
-
-                            PptShape newElement = new PptShape();
-
-                            newElement.internalId = shape.Id;
-
-                            newElement.belongsToATable = false;
-                            newElement.indexOnPresentation = indexOnPresentationCounter;
-                            newElement.indexOnSlide = indexOnSlideCounter;
-                            newElement.slideNumber = slide.SlideNumber;
-                            newElement.info = $"Slide {slide.SlideNumber} Text {shape.Id}";
-                            newElement.originalText = textRange.Text.ToString();
-
-                            shapesInPresentation.Add(newElement);
-                        }
-                    }
-                    else if (shape.HasTable == MsoTriState.msoTrue)
-                    {
-                        Table table = shape.Table;
-
-                        for (int col = 1; col <= table.Columns.Count; col++)
-                        {
-                            for (int row = 1; row <= table.Rows.Count; row++)
+                            if (shape.Type == Microsoft.Office.Core.MsoShapeType.msoGroup)
                             {
-                                Cell cell = table.Cell(row, col);
+                                shape.Ungroup();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"DEBUG: Unable to ungroup the shape with Id: {slide.SlideID} on Slide: {slide.SlideNumber}. Reason: {ex.ToString()}");
+                            continue;
+                        }
+                    }
 
-                                Microsoft.Office.Interop.PowerPoint.Shape cellShape = cell.Shape;
+                    int indexOnSlideCounter = 0;
 
-                                if (cellShape.HasTextFrame == MsoTriState.msoTrue && cellShape.TextFrame.HasText == MsoTriState.msoTrue)
+                    foreach (Shape shape in slide.Shapes)
+                    {
+                        if (shape.HasTextFrame == MsoTriState.msoTrue)
+                        {
+                            if (shape.TextFrame.HasText == MsoTriState.msoTrue)
+                            {
+                                var textRange = shape.TextFrame.TextRange;
+
+                                PptShape newElement = new PptShape();
+
+                                newElement.internalId = shape.Id;
+
+                                newElement.belongsToATable = false;
+                                newElement.indexOnPresentation = indexOnPresentationCounter;
+                                newElement.indexOnSlide = indexOnSlideCounter;
+                                newElement.slideNumber = slide.SlideNumber;
+                                newElement.info = $"Slide {slide.SlideNumber} Text {shape.Id}";
+                                newElement.originalText = textRange.Text.ToString();
+
+                                shapesInPresentation.Add(newElement);
+                            }
+                        }
+                        else if (shape.HasTable == MsoTriState.msoTrue)
+                        {
+                            Table table = shape.Table;
+
+                            for (int col = 1; col <= table.Columns.Count; col++)
+                            {
+                                for (int row = 1; row <= table.Rows.Count; row++)
                                 {
-                                    var textRange = cellShape.TextFrame.TextRange;
+                                    Cell cell = table.Cell(row, col);
 
-                                    PptShape newElement = new PptShape();
+                                    Microsoft.Office.Interop.PowerPoint.Shape cellShape = cell.Shape;
 
-                                    newElement.internalId = shape.Id;
+                                    if (cellShape.HasTextFrame == MsoTriState.msoTrue && cellShape.TextFrame.HasText == MsoTriState.msoTrue)
+                                    {
+                                        var textRange = cellShape.TextFrame.TextRange;
 
-                                    newElement.belongsToATable = true;
-                                    newElement.parentTableRow = row;
-                                    newElement.parentTableColumn = col;
+                                        PptShape newElement = new PptShape();
 
-                                    newElement.indexOnPresentation = indexOnPresentationCounter;
-                                    newElement.indexOnSlide = indexOnSlideCounter;
-                                    newElement.slideNumber = slide.SlideNumber;
-                                    newElement.info = $"Slide {slide.SlideNumber} Table {shape.Id} {row},{col}";
-                                    newElement.originalText = textRange.Text.ToString();
+                                        newElement.internalId = shape.Id;
 
-                                    shapesInPresentation.Add(newElement);
+                                        newElement.belongsToATable = true;
+                                        newElement.parentTableRow = row;
+                                        newElement.parentTableColumn = col;
+
+                                        newElement.indexOnPresentation = indexOnPresentationCounter;
+                                        newElement.indexOnSlide = indexOnSlideCounter;
+                                        newElement.slideNumber = slide.SlideNumber;
+                                        newElement.info = $"Slide {slide.SlideNumber} Table {shape.Id} {row},{col}";
+                                        newElement.originalText = textRange.Text.ToString();
+
+                                        shapesInPresentation.Add(newElement);
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    indexOnSlideCounter++;
-                } //End foreach (Shape shape in slide.Shapes)
+                        indexOnSlideCounter++;
+                    } //End foreach (Shape shape in slide.Shapes)
 
-                indexOnPresentationCounter++;
-            } //End foreach (Slide slide in pptPresentation.Slides)
+                    indexOnPresentationCounter++;
+                } //End foreach (Slide slide in pptPresentation.Slides)
 
-            return (true, "");
+                return (true, "");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.ToString());
+            }
         }
 
         public (bool success, string errorReason) extractShapesFromFile222()

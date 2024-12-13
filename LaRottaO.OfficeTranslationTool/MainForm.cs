@@ -40,9 +40,9 @@ namespace LaRottaO.OfficeTranslationTool
             }
         }
 
-        private void buttonOpenOfficeFile_Click(object sender, EventArgs e)
+        private async void buttonOpenOfficeFile_Click(object sender, EventArgs e)
         {
-            formLogic.launchSelectFileDialog();
+            await formLogic.launchSelectFileDialog();
         }
 
         //**************************************************
