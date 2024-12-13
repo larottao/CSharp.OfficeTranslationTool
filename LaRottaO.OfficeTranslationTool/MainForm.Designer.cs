@@ -49,11 +49,16 @@
             textBoxNewPartialExpTerm = new TextBox();
             buttonAddPartialExpressionToDic = new Button();
             buttonSaveConfig = new Button();
+            pictureBoxLoading = new PictureBox();
+            panelLoading = new Panel();
+            label5 = new Label();
             ((System.ComponentModel.ISupportInitialize)mainDataGridView).BeginInit();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridViewPartialExpressions).BeginInit();
             tabControlConfig.SuspendLayout();
             partialExpressionsTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxLoading).BeginInit();
+            panelLoading.SuspendLayout();
             SuspendLayout();
             // 
             // mainDataGridView
@@ -62,7 +67,7 @@
             mainDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             mainDataGridView.Location = new Point(12, 83);
             mainDataGridView.Name = "mainDataGridView";
-            mainDataGridView.Size = new Size(1080, 455);
+            mainDataGridView.Size = new Size(1080, 457);
             mainDataGridView.TabIndex = 0;
             mainDataGridView.CellBeginEdit += dataGridView_CellBeginEdit;
             mainDataGridView.CellEndEdit += dataGridView_CellEndEdit;
@@ -212,7 +217,7 @@
             tabControlConfig.Location = new Point(12, 83);
             tabControlConfig.Name = "tabControlConfig";
             tabControlConfig.SelectedIndex = 0;
-            tabControlConfig.Size = new Size(1080, 455);
+            tabControlConfig.Size = new Size(1080, 457);
             tabControlConfig.TabIndex = 11;
             tabControlConfig.Visible = false;
             // 
@@ -228,7 +233,7 @@
             partialExpressionsTab.Location = new Point(4, 24);
             partialExpressionsTab.Name = "partialExpressionsTab";
             partialExpressionsTab.Padding = new Padding(3);
-            partialExpressionsTab.Size = new Size(1072, 427);
+            partialExpressionsTab.Size = new Size(1072, 429);
             partialExpressionsTab.TabIndex = 0;
             partialExpressionsTab.Text = "Partial Expressions";
             partialExpressionsTab.UseVisualStyleBackColor = true;
@@ -299,7 +304,7 @@
             buttonSaveConfig.FlatAppearance.BorderColor = Color.Silver;
             buttonSaveConfig.FlatAppearance.BorderSize = 2;
             buttonSaveConfig.FlatStyle = FlatStyle.Flat;
-            buttonSaveConfig.Location = new Point(914, 544);
+            buttonSaveConfig.Location = new Point(914, 546);
             buttonSaveConfig.Name = "buttonSaveConfig";
             buttonSaveConfig.Size = new Size(174, 37);
             buttonSaveConfig.TabIndex = 12;
@@ -308,11 +313,41 @@
             buttonSaveConfig.Visible = false;
             buttonSaveConfig.Click += buttonSaveConfig_Click;
             // 
+            // pictureBoxLoading
+            // 
+            pictureBoxLoading.Image = Properties.Resources.loading;
+            pictureBoxLoading.Location = new Point(3, 5);
+            pictureBoxLoading.Name = "pictureBoxLoading";
+            pictureBoxLoading.Size = new Size(38, 38);
+            pictureBoxLoading.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBoxLoading.TabIndex = 13;
+            pictureBoxLoading.TabStop = false;
+            // 
+            // panelLoading
+            // 
+            panelLoading.Controls.Add(label5);
+            panelLoading.Controls.Add(pictureBoxLoading);
+            panelLoading.Location = new Point(12, 542);
+            panelLoading.Name = "panelLoading";
+            panelLoading.Size = new Size(315, 48);
+            panelLoading.TabIndex = 17;
+            panelLoading.Visible = false;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(56, 15);
+            label5.Name = "label5";
+            label5.Size = new Size(123, 15);
+            label5.TabIndex = 14;
+            label5.Text = "Loading, please wait...";
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1104, 589);
+            ClientSize = new Size(1104, 591);
+            Controls.Add(panelLoading);
             Controls.Add(buttonSaveConfig);
             Controls.Add(tabControlConfig);
             Controls.Add(panel1);
@@ -328,6 +363,9 @@
             tabControlConfig.ResumeLayout(false);
             partialExpressionsTab.ResumeLayout(false);
             partialExpressionsTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxLoading).EndInit();
+            panelLoading.ResumeLayout(false);
+            panelLoading.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -353,5 +391,8 @@
         public TextBox textBoxNewPartialExpTerm;
         private Button buttonDeletePartialExpFromDic;
         public DataGridView dataGridViewPartialExpressions;
+        private PictureBox pictureBoxLoading;
+        private Label label5;
+        public Panel panelLoading;
     }
 }

@@ -23,7 +23,7 @@ namespace LaRottaO.OfficeTranslationTool
             Debug.WriteLine(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
         }
 
-        public void launchSelectFileDialog()
+        public async void launchSelectFileDialog()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
@@ -41,118 +41,143 @@ namespace LaRottaO.OfficeTranslationTool
                 UIHelpers.offerToSaveDocumentBeforeExiting(_iProcessOfficeFile);
             }
 
-            openOfficeFile(openFileDialog.FileName);
+            await openOfficeFile(openFileDialog.FileName);
         }
 
-        public void openOfficeFile(String fileName)
+        public async Task openOfficeFile(String fileName)
         {
-            string extension = Path.GetExtension(fileName);
-
-            if (!File.Exists(fileName))
+            await Task.Run(async () =>
             {
-                UIHelpers.showErrorMessage($"The associated file {fileName} was not found.");
-                return;
-            }
+                string extension = Path.GetExtension(fileName);
 
-            //TODO: Add Word support
-
-            switch (extension.ToLower())
-            {
-                case ".json":
-
-                    //TODO open the associated file
-
-                    String associatedFileName = fileName.Replace(".json", "");
-
-                    openOfficeFile(associatedFileName);
-
+                if (!File.Exists(fileName))
+                {
+                    UIHelpers.showErrorMessage($"The associated file {fileName} was not found.");
                     return;
+                }
 
-                case ".pptx":
-                case ".ppt":
+                //TODO: Add Word support
 
-                    _iProcessOfficeFile = new ProcessPowerPointUsingInterop();
+                switch (extension.ToLower())
+                {
+                    case ".json":
 
-                    break;
+                        //TODO open the associated file
 
-                case ".xlsx":
-                case ".xls":
-                    //_iProcessOfficeFile = new ProcessExcelFileService();
-                    break;
+                        String associatedFileName = fileName.Replace(".json", "");
 
-                default:
-                    UIHelpers.showErrorMessage("Unsupported file format");
+                        await openOfficeFile(associatedFileName);
+
+                        return;
+
+                    case ".pptx":
+                    case ".ppt":
+
+                        _iProcessOfficeFile = new ProcessPowerPointUsingInterop();
+
+                        break;
+
+                    case ".xlsx":
+                    case ".xls":
+                        //_iProcessOfficeFile = new ProcessExcelFileService();
+                        break;
+
+                    default:
+                        UIHelpers.showErrorMessage("Unsupported file format");
+                        return;
+                }
+
+                currentOfficeDocPath = fileName;
+                var launchAppResult = _iProcessOfficeFile.launchOfficeProgramInstance();
+
+                if (!launchAppResult.success)
+                {
+                    UIHelpers.showErrorMessage(launchAppResult.errorReason);
                     return;
-            }
+                }
 
-            currentOfficeDocPath = fileName;
-            var launchAppResult = _iProcessOfficeFile.launchOfficeProgramInstance();
+                var openFileResult = _iProcessOfficeFile.openOfficeFile();
 
-            if (!launchAppResult.success)
-            {
-                UIHelpers.showErrorMessage(launchAppResult.errorReason);
-                return;
-            }
+                if (!openFileResult.success)
+                {
+                    UIHelpers.showErrorMessage(openFileResult.errorReason);
+                    return;
+                }
 
-            var openFileResult = _iProcessOfficeFile.openOfficeFile();
+                //**********************************************
+                //Flow depends if there's already a JSON
+                //***********************************************
 
-            if (!openFileResult.success)
-            {
-                UIHelpers.showErrorMessage(openFileResult.errorReason);
-                return;
-            }
+                mainForm.panelLoading.InvokeFromAnotherThread(() =>
+                {
+                    mainForm.panelLoading.Visible = true;
+                });
 
-            //**********************************************
-            //Flow depends if there's already a JSON
-            //***********************************************
+                if (File.Exists(currentOfficeDocPath + ".json"))
+                {
+                    await loadShapesFromJson();
+                }
+                else
+                {
+                    await loadShapesFromOfficeFile();
+                }
 
-            if (File.Exists(currentOfficeDocPath + ".json"))
-            {
-                loadShapesFromJson();
-            }
-            else
-            {
-                loadShapesFromOfficeFile();
-            }
+                mainForm.panelLoading.InvokeFromAnotherThread(() =>
+                {
+                    mainForm.panelLoading.Visible = false;
+                });
+            });
         }
 
-        private void loadShapesFromJson()
+        private async Task loadShapesFromJson()
         {
-            Debug.WriteLine("Project .json found, loading shapes from it");
-
-            var loadResult = LoadOfficeDocumentFromJson.load();
-
-            if (!loadResult.success)
+            await Task.Run(() =>
             {
-                UIHelpers.showErrorMessage($"{loadResult.errorReason} - creating a new project");
-                loadShapesFromOfficeFile();
-            }
+                Debug.WriteLine("Project .json found, loading shapes from it");
 
-            _iProcessOfficeFile.overwriteShapesStoredInMemory(loadResult.shapes);
+                var loadResult = LoadOfficeDocumentFromJson.load();
 
-            _mainForm.mainDataGridView.DataSource = _iProcessOfficeFile.getShapesStoredInMemory().shapes;
+                if (!loadResult.success)
+                {
+                    UIHelpers.showErrorMessage($"{loadResult.errorReason} - creating a new project");
+                    loadShapesFromOfficeFile();
+                }
+
+                _iProcessOfficeFile.overwriteShapesStoredInMemory(loadResult.shapes);
+
+                _mainForm.mainDataGridView.InvokeFromAnotherThread(() =>
+                {
+                    _mainForm.mainDataGridView.DataSource = _iProcessOfficeFile.getShapesStoredInMemory().shapes;
+                });
+            });
         }
 
-        private void loadShapesFromOfficeFile()
+        private async Task loadShapesFromOfficeFile()
         {
-            Debug.WriteLine("No project .json found, loading shapes from Office file...");
-
-            var extractionResult = _iProcessOfficeFile.extractShapesFromFile();
-
-            if (!extractionResult.success)
+            await Task.Run(() =>
             {
-                UIHelpers.showErrorMessage(extractionResult.errorReason);
-                return;
-            }
+                Debug.WriteLine("No project .json found, loading shapes from Office file...");
 
-            _mainForm.mainDataGridView.DataSource = _iProcessOfficeFile.getShapesStoredInMemory().shapes;
+                var extractionResult = _iProcessOfficeFile.extractShapesFromFile();
 
-            var saveResult = SaveOfficeDocumentAsJson.save(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
+                if (!extractionResult.success)
+                {
+                    UIHelpers.showErrorMessage(extractionResult.errorReason);
+                    return;
+                }
 
-            if (!saveResult.success)
-            {
-                UIHelpers.showErrorMessage(saveResult.errorReason);
-            }
+                _mainForm.mainDataGridView.InvokeFromAnotherThread(() =>
+                {
+                    _mainForm.mainDataGridView.DataSource = _iProcessOfficeFile.getShapesStoredInMemory().shapes;
+                });
+
+                var saveResult = SaveOfficeDocumentAsJson.save(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
+
+                if (!saveResult.success)
+                {
+                    UIHelpers.showErrorMessage(saveResult.errorReason);
+                }
+            });
         }
 
         public void closeOfficeFile()
@@ -287,77 +312,95 @@ namespace LaRottaO.OfficeTranslationTool
             return addResult;
         }
 
-        public (Boolean success, String errorReason) translateAllShapeElements(String sourceLanguage, String targetLanguage)
+        public async Task<(Boolean success, String errorReason)> translateAllShapeElements(String sourceLanguage, String targetLanguage)
         {
-            _iDictionary.initializeLocalDictionary();
-
-            //Iterate on all items
-
-            foreach (PptShape shapeUnderTranslation in _iProcessOfficeFile.getShapesStoredInMemory().shapes)
+            await Task.Run(() =>
             {
-                //Check if the string is not a number, blank or pure symbols
+                _iDictionary.initializeLocalDictionary();
 
-                if (string.IsNullOrEmpty(shapeUnderTranslation.originalText))
+                //Iterate on all items
+
+                foreach (PptShape shapeUnderTranslation in _iProcessOfficeFile.getShapesStoredInMemory().shapes)
                 {
-                    continue;
+                    //Check if the string is not a number, blank or pure symbols
+
+                    if (string.IsNullOrEmpty(shapeUnderTranslation.originalText))
+                    {
+                        continue;
+                    }
+
+                    if (!shapeUnderTranslation.originalText.Any(char.IsLetter))
+                    {
+                        continue;
+                    }
+
+                    UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
+
+                    //Check if the term exists in local dictionary as a complete word
+
+                    var localDicResult = _iDictionary.getTermFromLocalDictionary(shapeUnderTranslation.originalText);
+
+                    if (!localDicResult.success)
+                    {
+                        //Local dictionary failed, fatal error, abort process
+                        return (false, $"Unable to load local dictionary. {localDicResult.errorReason}");
+                    }
+
+                    if (localDicResult.success && localDicResult.termExists)
+                    {
+                        Debug.WriteLine($"{shapeUnderTranslation.originalText} found on local dictionary!");
+                        shapeUnderTranslation.newText = localDicResult.termTranslation;
+
+                        _mainForm.mainDataGridView.InvokeFromAnotherThread(() =>
+                        {
+                            _mainForm.mainDataGridView.Refresh();
+                        });
+
+                        continue;
+                    }
+
+                    Debug.WriteLine($"{shapeUnderTranslation.originalText} not found on local dictionary, using API");
+
+                    var apiResult = _itranslation.translate(shapeUnderTranslation.originalText);
+
+                    if (!apiResult.success)
+                    {
+                        //API failed, continue with the next one
+                        UIHelpers.showErrorMessage($"Unable to get translation from API. {apiResult.errorReason}");
+                        continue;
+                    }
+
+                    Debug.WriteLine($"{shapeUnderTranslation.originalText} found on API");
+
+                    shapeUnderTranslation.newText = apiResult.translatedText;
+                    _iDictionary.addOrUpdateLocalDictionary(shapeUnderTranslation.originalText, apiResult.translatedText, false);
+
+                    _mainForm.mainDataGridView.InvokeFromAnotherThread(() =>
+                    {
+                        _mainForm.mainDataGridView.Refresh();
+                    });
                 }
 
-                if (!shapeUnderTranslation.originalText.Any(char.IsLetter))
+                //Checks for partial text and replaces
+
+                var partialReplaceResult = _iDictionary.replacePartialExpressions(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
+
+                if (!partialReplaceResult.success)
                 {
-                    continue;
+                    UIHelpers.showErrorMessage($"Unable to replace partial words.{partialReplaceResult.errorReason}");
                 }
 
-                UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
+                _iProcessOfficeFile.overwriteShapesStoredInMemory(partialReplaceResult.replacedExpressions);
 
-                //Check if the term exists in local dictionary as a complete word
-
-                var localDicResult = _iDictionary.getTermFromLocalDictionary(shapeUnderTranslation.originalText);
-
-                if (!localDicResult.success)
+                _mainForm.mainDataGridView.InvokeFromAnotherThread(() =>
                 {
-                    //Local dictionary failed, fatal error, abort process
-                    return (false, $"Unable to load local dictionary. {localDicResult.errorReason}");
-                }
-
-                if (localDicResult.success && localDicResult.termExists)
-                {
-                    Debug.WriteLine($"{shapeUnderTranslation.originalText} found on local dictionary!");
-                    shapeUnderTranslation.newText = localDicResult.termTranslation;
                     _mainForm.mainDataGridView.Refresh();
-                    continue;
-                }
+                });
 
-                Debug.WriteLine($"{shapeUnderTranslation.originalText} not found on local dictionary, using API");
+                SaveOfficeDocumentAsJson.save(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
 
-                var apiResult = _itranslation.translate(shapeUnderTranslation.originalText);
-
-                if (!apiResult.success)
-                {
-                    //API failed, continue with the next one
-                    UIHelpers.showErrorMessage($"Unable to get translation from API. {apiResult.errorReason}");
-                    continue;
-                }
-
-                Debug.WriteLine($"{shapeUnderTranslation.originalText} found on API");
-
-                shapeUnderTranslation.newText = apiResult.translatedText;
-                _iDictionary.addOrUpdateLocalDictionary(shapeUnderTranslation.originalText, apiResult.translatedText, false);
-                _mainForm.mainDataGridView.Refresh();
-            }
-
-            //Checks for partial text and replaces
-
-            var partialReplaceResult = _iDictionary.replacePartialExpressions(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
-
-            if (!partialReplaceResult.success)
-            {
-                UIHelpers.showErrorMessage($"Unable to replace partial words.{partialReplaceResult.errorReason}");
-            }
-
-            _iProcessOfficeFile.overwriteShapesStoredInMemory(partialReplaceResult.replacedExpressions);
-            _mainForm.mainDataGridView.Refresh();
-
-            SaveOfficeDocumentAsJson.save(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
+                return (true, "");
+            });
 
             return (true, "");
         }
@@ -434,6 +477,7 @@ namespace LaRottaO.OfficeTranslationTool
         public void populatePartialExpressionsDgv(DataGridView dataGridView)
         {
             dataGridView.DataSource = _iDictionary.getPartialExpressionList().partialExpressions;
+
             dataGridView.Refresh();
         }
     }

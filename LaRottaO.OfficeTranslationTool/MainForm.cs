@@ -150,7 +150,7 @@ namespace LaRottaO.OfficeTranslationTool
             formLogic.setDictionaryLanguage(comboBoxSourceLanguage.Text, comboBoxDestLanguage.Text);
         }
 
-        private void buttonTranslateAll_Click(object sender, EventArgs e)
+        private async void buttonTranslateAll_Click(object sender, EventArgs e)
         {
             if (!formLogic.areBothSourceAndDestintionLanguagesSet())
             {
@@ -158,7 +158,7 @@ namespace LaRottaO.OfficeTranslationTool
                 return;
             }
 
-            var transResult = formLogic.translateAllShapeElements(comboBoxSourceLanguage.Text, comboBoxDestLanguage.Text);
+            var transResult = await formLogic.translateAllShapeElements(comboBoxSourceLanguage.Text, comboBoxDestLanguage.Text);
 
             if (transResult.success)
             {
