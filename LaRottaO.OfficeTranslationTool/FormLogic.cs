@@ -23,7 +23,7 @@ namespace LaRottaO.OfficeTranslationTool
             Debug.WriteLine(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
         }
 
-        public async void launchSelectFileDialog()
+        public async Task launchSelectFileDialog()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
@@ -62,7 +62,11 @@ namespace LaRottaO.OfficeTranslationTool
                 {
                     case ".json":
 
-                        //TODO open the associated file
+                        //**************************************************************
+                        //If this program was used before, there should be an Office
+                        //file named file.extension.json next to it,
+                        //so let' get rid of the .json part and try to open the file.
+                        //**************************************************************
 
                         String associatedFileName = fileName.Replace(".json", "");
 
@@ -131,7 +135,7 @@ namespace LaRottaO.OfficeTranslationTool
 
         private async Task loadShapesFromJson()
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 Debug.WriteLine("Project .json found, loading shapes from it");
 
@@ -140,7 +144,7 @@ namespace LaRottaO.OfficeTranslationTool
                 if (!loadResult.success)
                 {
                     UIHelpers.showErrorMessage($"{loadResult.errorReason} - creating a new project");
-                    loadShapesFromOfficeFile();
+                    await loadShapesFromOfficeFile();
                 }
 
                 _iProcessOfficeFile.overwriteShapesStoredInMemory(loadResult.shapes);
