@@ -209,34 +209,48 @@ namespace LaRottaO.OfficeTranslationTool.Services
             {
                 if (shape.type == GlobalConstants.ElementType.PARAGRAPH)
                 {
-                    foreach (Section section in wordDocument.Sections)
+                    var find = wordDocument.Content.Find;
+                    find.ClearFormatting();
+                    find.Text = shape.originalText.Substring(0, Math.Min(shape.originalText.Length, 255)); // Limit Find text length
+                    find.Replacement.ClearFormatting();
+
+                    // Break new text into manageable chunks if too long
+                    string replacementText = shape.newText;
+                    if (replacementText.Length > 255)
                     {
-                        Debug.WriteLine($"Processing Section: {section.Index}");
-
-                        // Iterate through paragraphs in the section
-                        foreach (Paragraph paragraph in section.Range.Paragraphs)
+                        // Split replacement into multiple smaller replacements
+                        int chunkSize = 255;
+                        for (int i = 0; i < replacementText.Length; i += chunkSize)
                         {
-                            string originalText = paragraph.Range.Text.TrimEnd('\r', '\a').Trim();
+                            string chunk = replacementText.Substring(i, Math.Min(chunkSize, replacementText.Length - i));
 
-                            // If the paragraph contains the original text, replace it
-                            if (originalText.Contains(shape.originalText))
+                            // Execute Find and Replace for the chunk
+                            bool found = find.Execute(
+                                ReplaceWith: chunk,
+                                Replace: WdReplace.wdReplaceOne
+                            );
+
+                            if (!found)
                             {
-                                Debug.WriteLine($"Found matching paragraph. Replacing text: '{shape.originalText}' with '{shape.newText}'");
-
-                                // Replace the text using the Replace method
-                                paragraph.Range.Find.Execute(
-                                    FindText: shape.originalText,
-                                    ReplaceWith: shape.newText,
-                                    Replace: WdReplace.wdReplaceOne
-                                );
-
-                                return (true, string.Empty);
+                                return (false, $"Text not found during chunked replacement: '{shape.originalText}'");
                             }
                         }
                     }
+                    else
+                    {
+                        // Replace directly if text is within acceptable length
+                        find.Replacement.Text = replacementText;
+                        bool found = find.Execute(
+                            Replace: WdReplace.wdReplaceOne
+                        );
 
-                    // If no matching paragraph is found
-                    return (false, "Paragraph with specified original text not found.");
+                        if (!found)
+                        {
+                            return (false, $"Text not found: '{shape.originalText}'");
+                        }
+                    }
+
+                    return (true, string.Empty);
                 }
 
                 return (true, string.Empty); // Not a paragraph, no action taken
