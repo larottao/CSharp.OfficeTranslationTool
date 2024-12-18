@@ -6,7 +6,7 @@ using static LaRottaO.OfficeTranslationTool.GlobalVariables;
 
 namespace LaRottaO.OfficeTranslationTool.Models
 {
-    public class PptShape
+    public class ElementToBeTranslated
     {
         [Browsable(false)]
         public int indexOnPresentation { get; set; }
@@ -15,16 +15,7 @@ namespace LaRottaO.OfficeTranslationTool.Models
         public int slideNumber { get; set; }
 
         [Browsable(false)]
-        public int indexOnSlide { get; set; }
-
-        //[Browsable(false)]
-        public dynamic section { get; set; }
-
-        //[Browsable(false)]
         public dynamic internalId { get; set; }
-
-        [Browsable(false)]
-        public Boolean belongsToATable { get; set; }
 
         [Browsable(false)]
         public int parentTableRow { get; set; }
@@ -35,7 +26,7 @@ namespace LaRottaO.OfficeTranslationTool.Models
         [ColumnName("Info")]
         public String info { get; set; } = String.Empty;
 
-        //[Browsable(false)]
+        [Browsable(false)]
         [ColumnName("Element type")]
         public ElementType type { get; set; }
 
@@ -46,6 +37,6 @@ namespace LaRottaO.OfficeTranslationTool.Models
         public String newText { get; set; } = String.Empty;
 
         [Browsable(false)]
-        public Shape originalShape { get; set; }
+        public Shape originalPptxShape { get; set; }
     }
 }

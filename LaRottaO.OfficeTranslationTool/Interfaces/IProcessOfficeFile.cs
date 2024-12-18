@@ -3,6 +3,7 @@ using Microsoft.Office.Interop.PowerPoint;
 
 namespace LaRottaO.OfficeTranslationTool.Interfaces
 {
+    //ETBT 'Element to be translated' is a more generic way for calling Shapes, Tables, Paragrpaphs, etc.
     internal interface IProcessOfficeFile
     {
         (bool success, string errorReason) launchOfficeProgramInstance();
@@ -13,17 +14,17 @@ namespace LaRottaO.OfficeTranslationTool.Interfaces
 
         bool isOfficeFileOpen();
 
-        (bool success, string errorReason) extractShapesFromFile();
+        (bool success, string errorReason) extractETBTsFromFile();
 
-        (bool success, string errorReason) overwriteShapesStoredInMemory(List<PptShape> shapes);
+        (bool success, string errorReason) overwriteETBTsStoredInMemory(List<ElementToBeTranslated> elementToBeTranslated);
 
-        (bool success, string errorReason, List<PptShape> shapes) getShapesStoredInMemory();
+        (bool success, string errorReason, List<ElementToBeTranslated> shapes) getETBTsStoredInMemory();
 
-        (bool success, string errorReason, PptShape shape) getShapeFromMemoryAtIndex(int index);
+        (bool success, string errorReason, ElementToBeTranslated shape) getETBTFromMemoryAtIndex(int index);
 
-        (bool success, string errorReason, Shape? shape) navigateToShapeOnFile(PptShape shape);
+        (bool success, string errorReason, Shape? shape) navigateToETBTOnFile(ElementToBeTranslated elementToBeTranslated);
 
-        (bool success, string errorReason) replaceShapeText(PptShape pptShape, Boolean useOriginalText, Boolean useTranslatedText, Boolean shrinkIfNecessary);
+        (bool success, string errorReason) replaceETBTText(ElementToBeTranslated elementToBeTranslated, Boolean useOriginalText, Boolean useTranslatedText, Boolean shrinkIfNecessary);
 
         (bool success, string errorReason) saveChangesOnFile();
 

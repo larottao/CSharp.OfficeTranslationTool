@@ -21,7 +21,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
     {
         private Application wordApp;
         private Document wordDocument;
-        private List<PptShape> elementsInDocument;
+        private List<ElementToBeTranslated> elementsInDocument;
 
         public (bool success, string errorReason) closeCurrentlyOpenFile(bool saveChangesBeforeClosing)
         {
@@ -59,11 +59,11 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
         }
 
-        public (bool success, string errorReason) extractShapesFromFile()
+        public (bool success, string errorReason) extractETBTsFromFile()
         {
             try
             {
-                elementsInDocument = new List<PptShape>();
+                elementsInDocument = new List<ElementToBeTranslated>();
 
                 // Iterate through sections
                 foreach (Section section in wordDocument.Sections)
@@ -74,9 +74,8 @@ namespace LaRottaO.OfficeTranslationTool.Services
                         string text = paragraph.Range.Text.Trim();
                         if (!string.IsNullOrEmpty(text))
                         {
-                            elementsInDocument.Add(new PptShape
+                            elementsInDocument.Add(new ElementToBeTranslated
                             {
-                                section = section.Index,
                                 internalId = paragraph.ParaID,
                                 originalText = paragraph.Range.Text.TrimEnd('\r', '\a').Trim(),
                                 type = GlobalConstants.ElementType.PARAGRAPH
@@ -92,7 +91,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
                             string shapeText = shape.TextFrame.TextRange.Text.Trim();
                             if (!string.IsNullOrEmpty(shapeText))
                             {
-                                elementsInDocument.Add(new PptShape
+                                elementsInDocument.Add(new ElementToBeTranslated
                                 {
                                     internalId = shape.ID,
                                     originalText = shapeText,
@@ -114,7 +113,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
                             string cellText = cell.Range.Text.Trim();
                             if (!string.IsNullOrEmpty(cellText))
                             {
-                                elementsInDocument.Add(new PptShape
+                                elementsInDocument.Add(new ElementToBeTranslated
                                 {
                                     internalId = cell.ID,
                                     originalText = cellText,
@@ -133,21 +132,21 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
         }
 
-        public (bool success, string errorReason, List<PptShape> shapes) getShapesStoredInMemory()
+        public (bool success, string errorReason, List<ElementToBeTranslated> shapes) getETBTsStoredInMemory()
         {
             if (!isOfficeProgramOpen() || !isOfficeFileOpen() || elementsInDocument == null || elementsInDocument.Count == 0)
             {
-                return (false, "No shapes to show", new List<PptShape>());
+                return (false, "No shapes to show", new List<ElementToBeTranslated>());
             }
 
             return (true, "", elementsInDocument);
         }
 
-        public (bool success, string errorReason, PptShape shape) getShapeFromMemoryAtIndex(int index)
+        public (bool success, string errorReason, ElementToBeTranslated shape) getETBTFromMemoryAtIndex(int index)
         {
             if (!isOfficeProgramOpen() || !isOfficeFileOpen() || elementsInDocument == null || elementsInDocument.Count == 0)
             {
-                return (false, "No shapes to show", default(PptShape));
+                return (false, "No shapes to show", default(ElementToBeTranslated));
             }
 
             return (true, "", elementsInDocument[index]);
@@ -192,7 +191,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
         }
 
-        public (bool success, string errorReason) overwriteShapesStoredInMemory(List<PptShape> shapes)
+        public (bool success, string errorReason) overwriteETBTsStoredInMemory(List<ElementToBeTranslated> shapes)
         {
             if (!isOfficeProgramOpen() || !isOfficeFileOpen())
             {
@@ -203,7 +202,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
             return (true, "");
         }
 
-        public (bool success, string errorReason) replaceShapeText(PptShape shape, bool useOriginalText, bool useTranslatedText, bool shrinkIfNecessary)
+        public (bool success, string errorReason) replaceETBTText(ElementToBeTranslated shape, bool useOriginalText, bool useTranslatedText, bool shrinkIfNecessary)
         {
             try
             {
@@ -305,7 +304,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
         }
 
-        public (bool success, string errorReason, Microsoft.Office.Interop.PowerPoint.Shape? shape) navigateToShapeOnFile(PptShape shape)
+        public (bool success, string errorReason, Microsoft.Office.Interop.PowerPoint.Shape? shape) navigateToETBTOnFile(ElementToBeTranslated shape)
         {
             return (false, "", null);
         }

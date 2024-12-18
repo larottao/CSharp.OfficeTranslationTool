@@ -6,7 +6,7 @@ namespace LaRottaO.OfficeTranslationTool.Utils.Utils
 {
     internal class LoadOfficeDocumentFromJson
     {
-        public static (bool success, string errorReason, List<PptShape> shapes) load()
+        public static (bool success, string errorReason, List<ElementToBeTranslated> shapes) load()
         {
             if (File.Exists(currentOfficeDocPath + ".json"))
             {
@@ -14,22 +14,22 @@ namespace LaRottaO.OfficeTranslationTool.Utils.Utils
                 {
                     string json = File.ReadAllText(currentOfficeDocPath + ".json");
 
-                    List<PptShape>? readShapes = JsonConvert.DeserializeObject<List<PptShape>>(json);
+                    List<ElementToBeTranslated>? readShapes = JsonConvert.DeserializeObject<List<ElementToBeTranslated>>(json);
 
                     if (readShapes == null)
                     {
-                        return (false, $"Unable to parse project from external .json, incorrect file structure", new List<PptShape>());
+                        return (false, $"Unable to parse project from external .json, incorrect file structure", new List<ElementToBeTranslated>());
                     }
 
                     return (true, "", readShapes);
                 }
                 catch (Exception ex)
                 {
-                    return (false, $"Unable to read project from external .json {ex}", new List<PptShape>());
+                    return (false, $"Unable to read project from external .json {ex}", new List<ElementToBeTranslated>());
                 }
             }
 
-            return (false, $"Unable to read project from external .json {currentOfficeDocPath + ".json"}, file does not exist", new List<PptShape>());
+            return (false, $"Unable to read project from external .json {currentOfficeDocPath + ".json"}, file does not exist", new List<ElementToBeTranslated>());
         }
     }
 }

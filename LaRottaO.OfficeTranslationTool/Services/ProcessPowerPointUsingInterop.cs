@@ -16,7 +16,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
     {
         private static Application pptApp;
         private static Presentation pptPresentation;
-        private static List<PptShape> shapesInPresentation;
+        private static List<ElementToBeTranslated> shapesInPresentation;
 
         public (bool success, string errorReason) closeCurrentlyOpenFile(bool saveChangesBeforeClosing)
         {
@@ -51,11 +51,11 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
         }
 
-        public (bool success, string errorReason) extractShapesFromFile()
+        public (bool success, string errorReason) extractETBTsFromFile()
         {
             try
             {
-                shapesInPresentation = new List<PptShape>();
+                shapesInPresentation = new List<ElementToBeTranslated>();
                 int indexOnPresentationCounter = 0;
 
                 foreach (Slide slide in pptPresentation.Slides)
@@ -97,12 +97,11 @@ namespace LaRottaO.OfficeTranslationTool.Services
                     // Process standard shapes with text
                     var textRange = shape.TextFrame.TextRange;
 
-                    PptShape newElement = new PptShape
+                    ElementToBeTranslated newElement = new ElementToBeTranslated
                     {
                         internalId = shape.Id,
                         type = GlobalConstants.ElementType.SHAPE,
                         indexOnPresentation = indexOnPresentation,
-                        indexOnSlide = indexOnSlide,
                         slideNumber = slideNumber,
                         info = $"Slide {slideNumber} Shape {shape.Id}",
                         originalText = textRange.Text
@@ -126,14 +125,13 @@ namespace LaRottaO.OfficeTranslationTool.Services
                             {
                                 var textRange = cellShape.TextFrame.TextRange;
 
-                                PptShape newElement = new PptShape
+                                ElementToBeTranslated newElement = new ElementToBeTranslated
                                 {
                                     internalId = shape.Id, // Table ID for grouping
                                     type = GlobalConstants.ElementType.TABLE,
                                     parentTableRow = row,
                                     parentTableColumn = col,
                                     indexOnPresentation = indexOnPresentation,
-                                    indexOnSlide = indexOnSlide,
                                     slideNumber = slideNumber,
                                     info = $"Slide {slideNumber} Table {shape.Id} Row {row} Col {col}",
                                     originalText = textRange.Text
@@ -151,107 +149,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
         }
 
-        public (bool success, string errorReason) extractShapesFromFileOriginalImp()
-        {
-            try
-            {
-                shapesInPresentation = new List<PptShape>();
-
-                int indexOnPresentationCounter = 0;
-
-                foreach (Slide slide in pptPresentation.Slides)
-                {
-                    foreach (Microsoft.Office.Interop.PowerPoint.Shape shape in slide.Shapes)
-                    {
-                        try
-                        {
-                            if (shape.Type == Microsoft.Office.Core.MsoShapeType.msoGroup)
-                            {
-                                shape.Ungroup();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine($"DEBUG: Unable to ungroup the shape with Id: {slide.SlideID} on Slide: {slide.SlideNumber}. Reason: {ex.ToString()}");
-                            continue;
-                        }
-                    }
-
-                    int indexOnSlideCounter = 0;
-
-                    foreach (Shape shape in slide.Shapes)
-                    {
-                        if (shape.HasTextFrame == MsoTriState.msoTrue)
-                        {
-                            if (shape.TextFrame.HasText == MsoTriState.msoTrue)
-                            {
-                                var textRange = shape.TextFrame.TextRange;
-
-                                PptShape newElement = new PptShape();
-
-                                newElement.internalId = shape.Id;
-
-                                newElement.belongsToATable = false;
-                                newElement.indexOnPresentation = indexOnPresentationCounter;
-                                newElement.indexOnSlide = indexOnSlideCounter;
-                                newElement.slideNumber = slide.SlideNumber;
-                                newElement.info = $"Slide {slide.SlideNumber} Text {shape.Id}";
-                                newElement.originalText = textRange.Text.ToString();
-
-                                shapesInPresentation.Add(newElement);
-                            }
-                        }
-                        else if (shape.HasTable == MsoTriState.msoTrue)
-                        {
-                            Table table = shape.Table;
-
-                            for (int col = 1; col <= table.Columns.Count; col++)
-                            {
-                                for (int row = 1; row <= table.Rows.Count; row++)
-                                {
-                                    Cell cell = table.Cell(row, col);
-
-                                    Microsoft.Office.Interop.PowerPoint.Shape cellShape = cell.Shape;
-
-                                    if (cellShape.HasTextFrame == MsoTriState.msoTrue && cellShape.TextFrame.HasText == MsoTriState.msoTrue)
-                                    {
-                                        var textRange = cellShape.TextFrame.TextRange;
-
-                                        PptShape newElement = new PptShape();
-
-                                        newElement.internalId = shape.Id;
-
-                                        newElement.belongsToATable = true;
-                                        newElement.parentTableRow = row;
-                                        newElement.parentTableColumn = col;
-
-                                        newElement.indexOnPresentation = indexOnPresentationCounter;
-                                        newElement.indexOnSlide = indexOnSlideCounter;
-                                        newElement.slideNumber = slide.SlideNumber;
-                                        newElement.info = $"Slide {slide.SlideNumber} Table {shape.Id} {row},{col}";
-                                        newElement.originalText = textRange.Text.ToString();
-
-                                        shapesInPresentation.Add(newElement);
-                                    }
-                                }
-                            }
-                        }
-
-                        indexOnSlideCounter++;
-                    } //End foreach (Shape shape in slide.Shapes)
-
-                    indexOnPresentationCounter++;
-                } //End foreach (Slide slide in pptPresentation.Slides)
-
-                return (true, "");
-            }
-            catch (Exception ex)
-            {
-                return (false, ex.ToString());
-            }
-        }
-
-        public (bool success, string errorReason, PptShape shape) getShapeFromMemoryAtIndex(int index)
+        public (bool success, string errorReason, ElementToBeTranslated shape) getETBTFromMemoryAtIndex(int index)
         {
             //TODO return empty shape
 
@@ -263,11 +161,11 @@ namespace LaRottaO.OfficeTranslationTool.Services
             return (true, "", shapesInPresentation[index]);
         }
 
-        public (bool success, string errorReason, List<PptShape> shapes) getShapesStoredInMemory()
+        public (bool success, string errorReason, List<ElementToBeTranslated> shapes) getETBTsStoredInMemory()
         {
             if (!isOfficeProgramOpen() || !isOfficeFileOpen() || shapesInPresentation == null || shapesInPresentation.Count == 0)
             {
-                return (false, "No shapes to show", new List<PptShape>());
+                return (false, "No shapes to show", new List<ElementToBeTranslated>());
             }
 
             return (true, "", shapesInPresentation);
@@ -297,7 +195,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
         }
 
-        public (bool success, string errorReason, Shape? shape) navigateToShapeOnFile(PptShape shapeElement)
+        public (bool success, string errorReason, Shape? shape) navigateToETBTOnFile(ElementToBeTranslated shapeElement)
         {
             //TODO This seems like a waste of resources but ensures there are no errors that break the code
 
@@ -372,7 +270,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
         }
 
-        public (bool success, string errorReason) overwriteShapesStoredInMemory(List<PptShape> shapes)
+        public (bool success, string errorReason) overwriteETBTsStoredInMemory(List<ElementToBeTranslated> shapes)
         {
             if (!isOfficeProgramOpen() || !isOfficeFileOpen())
             {
@@ -384,11 +282,11 @@ namespace LaRottaO.OfficeTranslationTool.Services
             return (true, "");
         }
 
-        public (bool success, string errorReason) replaceShapeText(PptShape pptShape, Boolean useOriginalText, Boolean useTranslatedText, Boolean shrinkIfNecessary)
+        public (bool success, string errorReason) replaceETBTText(ElementToBeTranslated pptShape, Boolean useOriginalText, Boolean useTranslatedText, Boolean shrinkIfNecessary)
         {
             try
             {
-                var navResult = navigateToShapeOnFile(pptShape);
+                var navResult = navigateToETBTOnFile(pptShape);
 
                 //*****************************************************************************
                 //If it fails it cannot continue, because the shape to replace would be null.
@@ -399,7 +297,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
                     return (false, navResult.errorReason);
                 }
 
-                pptShape.originalShape = navResult.shape;
+                pptShape.originalPptxShape = navResult.shape;
 
                 var savePropsResult = saveOriginalShapeProperties(pptShape);
 
@@ -430,7 +328,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
         }
 
-        private static (bool success, string errorReason, OriginalShapeProperties props) saveOriginalShapeProperties(PptShape pptShape)
+        private static (bool success, string errorReason, OriginalShapeProperties props) saveOriginalShapeProperties(ElementToBeTranslated pptShape)
         {
             OriginalShapeProperties props = new OriginalShapeProperties();
 
@@ -445,18 +343,18 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
         }
 
-        private static (bool success, string errorReason) restoreOriginalPropertiesIfChanged(PptShape pptShape)
+        private static (bool success, string errorReason) restoreOriginalPropertiesIfChanged(ElementToBeTranslated pptShape)
         {
             try
             {
-                if (pptShape.belongsToATable)
+                if (pptShape.type.Equals(GlobalConstants.ElementType.TABLE))
                 {
                     return (true, "");
                 }
 
-                float originalFontSize = pptShape.originalShape.TextFrame.TextRange.Font.Size;
+                float originalFontSize = pptShape.originalPptxShape.TextFrame.TextRange.Font.Size;
 
-                Microsoft.Office.Interop.PowerPoint.TextFrame textFrame = pptShape.originalShape.TextFrame;
+                Microsoft.Office.Interop.PowerPoint.TextFrame textFrame = pptShape.originalPptxShape.TextFrame;
 
                 textFrame.AutoSize = PpAutoSize.ppAutoSizeNone;
                 textFrame.MarginLeft = 0;
@@ -469,7 +367,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
                 float minFontSize = originalFontSize - 2.0f; // Define a minimum font size to avoid overly shrinking text
                 const float scaleFactor = 0.95f; // Reduce font size by 5% in each iteration
 
-                while (!IsTextInsideShape(pptShape.originalShape) && fontSize > minFontSize)
+                while (!IsTextInsideShape(pptShape.originalPptxShape) && fontSize > minFontSize)
                 {
                     fontSize *= scaleFactor;
                     textFrame.TextRange.Font.Size = fontSize;
@@ -525,7 +423,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
         }
 
-        private static (bool success, string errorReason) replaceShapeInnerText(PptShape shape, Boolean useOriginalText, Boolean useTranslatedText)
+        private static (bool success, string errorReason) replaceShapeInnerText(ElementToBeTranslated shape, Boolean useOriginalText, Boolean useTranslatedText)
         {
             try
             {
@@ -617,50 +515,6 @@ namespace LaRottaO.OfficeTranslationTool.Services
             }
         }
 
-        private static (bool success, string errorReason) replaceShapeInnerTextOriginalImp(PptShape shape, Boolean useOriginalText, Boolean useTranslatedText)
-        {
-            try
-            {
-                if (shape.belongsToATable)
-                {
-                    Shape tableShape = shape.originalShape;
-                    Table table = tableShape.Table;
-
-                    Cell cell = table.Cell(shape.parentTableRow, shape.parentTableColumn);
-
-                    Shape cellShape = cell.Shape;
-
-                    if (useTranslatedText)
-                    {
-                        cellShape.TextFrame.TextRange.Text = shape.newText;
-                    }
-
-                    if (useOriginalText)
-                    {
-                        cellShape.TextFrame.TextRange.Text = shape.originalText;
-                    }
-                }
-                else
-                {
-                    if (useTranslatedText)
-                    {
-                        shape.originalShape.TextFrame.TextRange.Text = shape.newText;
-                    }
-
-                    if (useOriginalText)
-                    {
-                        shape.originalShape.TextFrame.TextRange.Text = shape.originalText;
-                    }
-                }
-
-                return (true, "");
-            }
-            catch (Exception ex)
-            {
-                return (false, $"Unable to replace shape inner text {ex.ToString()}");
-            }
-        }
-
         public (bool success, string errorReason) saveChangesOnFile()
         {
             //TODO
@@ -668,3 +522,149 @@ namespace LaRottaO.OfficeTranslationTool.Services
         }
     }
 }
+
+/*
+public (bool success, string errorReason) extractShapesFromFileOriginalImp()
+{
+    try
+    {
+        shapesInPresentation = new List<PptShape>();
+
+        int indexOnPresentationCounter = 0;
+
+        foreach (Slide slide in pptPresentation.Slides)
+        {
+            foreach (Microsoft.Office.Interop.PowerPoint.Shape shape in slide.Shapes)
+            {
+                try
+                {
+                    if (shape.Type == Microsoft.Office.Core.MsoShapeType.msoGroup)
+                    {
+                        shape.Ungroup();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"DEBUG: Unable to ungroup the shape with Id: {slide.SlideID} on Slide: {slide.SlideNumber}. Reason: {ex.ToString()}");
+                    continue;
+                }
+            }
+
+            int indexOnSlideCounter = 0;
+
+            foreach (Shape shape in slide.Shapes)
+            {
+                if (shape.HasTextFrame == MsoTriState.msoTrue)
+                {
+                    if (shape.TextFrame.HasText == MsoTriState.msoTrue)
+                    {
+                        var textRange = shape.TextFrame.TextRange;
+
+                        PptShape newElement = new PptShape();
+
+                        newElement.internalId = shape.Id;
+
+                        newElement.belongsToATable = false;
+                        newElement.indexOnPresentation = indexOnPresentationCounter;
+                        newElement.indexOnSlide = indexOnSlideCounter;
+                        newElement.slideNumber = slide.SlideNumber;
+                        newElement.info = $"Slide {slide.SlideNumber} Text {shape.Id}";
+                        newElement.originalText = textRange.Text.ToString();
+
+                        shapesInPresentation.Add(newElement);
+                    }
+                }
+                else if (shape.HasTable == MsoTriState.msoTrue)
+                {
+                    Table table = shape.Table;
+
+                    for (int col = 1; col <= table.Columns.Count; col++)
+                    {
+                        for (int row = 1; row <= table.Rows.Count; row++)
+                        {
+                            Cell cell = table.Cell(row, col);
+
+                            Microsoft.Office.Interop.PowerPoint.Shape cellShape = cell.Shape;
+
+                            if (cellShape.HasTextFrame == MsoTriState.msoTrue && cellShape.TextFrame.HasText == MsoTriState.msoTrue)
+                            {
+                                var textRange = cellShape.TextFrame.TextRange;
+
+                                PptShape newElement = new PptShape();
+
+                                newElement.internalId = shape.Id;
+
+                                newElement.belongsToATable = true;
+                                newElement.parentTableRow = row;
+                                newElement.parentTableColumn = col;
+
+                                newElement.indexOnPresentation = indexOnPresentationCounter;
+                                newElement.indexOnSlide = indexOnSlideCounter;
+                                newElement.slideNumber = slide.SlideNumber;
+                                newElement.info = $"Slide {slide.SlideNumber} Table {shape.Id} {row},{col}";
+                                newElement.originalText = textRange.Text.ToString();
+
+                                shapesInPresentation.Add(newElement);
+                            }
+                        }
+                    }
+                }
+
+                indexOnSlideCounter++;
+            } //End foreach (Shape shape in slide.Shapes)
+
+            indexOnPresentationCounter++;
+        } //End foreach (Slide slide in pptPresentation.Slides)
+
+        return (true, "");
+    }
+    catch (Exception ex)
+    {
+        return (false, ex.ToString());
+    }
+}
+private static (bool success, string errorReason) replaceShapeInnerTextOriginalImp(PptShape shape, Boolean useOriginalText, Boolean useTranslatedText)
+{
+    try
+    {
+        if (shape.belongsToATable)
+        {
+            Shape tableShape = shape.originalShape;
+            Table table = tableShape.Table;
+
+            Cell cell = table.Cell(shape.parentTableRow, shape.parentTableColumn);
+
+            Shape cellShape = cell.Shape;
+
+            if (useTranslatedText)
+            {
+                cellShape.TextFrame.TextRange.Text = shape.newText;
+            }
+
+            if (useOriginalText)
+            {
+                cellShape.TextFrame.TextRange.Text = shape.originalText;
+            }
+        }
+        else
+        {
+            if (useTranslatedText)
+            {
+                shape.originalShape.TextFrame.TextRange.Text = shape.newText;
+            }
+
+            if (useOriginalText)
+            {
+                shape.originalShape.TextFrame.TextRange.Text = shape.originalText;
+            }
+        }
+
+        return (true, "");
+    }
+    catch (Exception ex)
+    {
+        return (false, $"Unable to replace shape inner text {ex.ToString()}");
+    }
+}
+
+*/

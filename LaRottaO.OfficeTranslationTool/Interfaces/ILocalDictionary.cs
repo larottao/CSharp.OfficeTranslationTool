@@ -10,7 +10,7 @@ namespace LaRottaO.OfficeTranslationTool.Interfaces
 
         (bool success, string errorReason, bool termExists, string termTranslation) getTermFromLocalDictionary(string term);
 
-        (bool success, string errorReason, List<PptShape> replacedExpressions) replacePartialExpressions(List<PptShape> elementsTobeExamined);
+        (bool success, string errorReason, List<ElementToBeTranslated> replacedExpressions) replacePartialExpressions(List<ElementToBeTranslated> elementsTobeExamined);
 
         (bool success, string errorReason, List<SavedTranslation> partialExpressions) getPartialExpressionList();
 

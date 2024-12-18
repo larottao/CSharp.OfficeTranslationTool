@@ -7,7 +7,7 @@ namespace LaRottaO.OfficeTranslationTool.Utils.Utils
 {
     internal static class SaveOfficeDocumentAsJson
     {
-        public static (bool success, string errorReason) save(List<PptShape> shapesList)
+        public static (bool success, string errorReason) save(List<ElementToBeTranslated> shapesList)
         {
             try
             {

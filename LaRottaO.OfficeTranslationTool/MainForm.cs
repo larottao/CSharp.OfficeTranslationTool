@@ -76,7 +76,7 @@ namespace LaRottaO.OfficeTranslationTool
         {
             foreach (DataGridViewColumn column in mainDataGridView.Columns)
             {
-                var property = typeof(PptShape).GetProperty(column.DataPropertyName);
+                var property = typeof(ElementToBeTranslated).GetProperty(column.DataPropertyName);
                 if (property != null)
                 {
                     // Check for [Browsable(false)]

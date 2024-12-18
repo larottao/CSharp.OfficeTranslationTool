@@ -20,7 +20,7 @@ namespace LaRottaO.OfficeTranslationTool
 
         public void test()
         {
-            Debug.WriteLine(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
+            Debug.WriteLine(_iProcessOfficeFile.getETBTsStoredInMemory().shapes);
         }
 
         public async Task launchSelectFileDialog()
@@ -152,11 +152,11 @@ namespace LaRottaO.OfficeTranslationTool
                     await loadShapesFromOfficeFile();
                 }
 
-                _iProcessOfficeFile.overwriteShapesStoredInMemory(loadResult.shapes);
+                _iProcessOfficeFile.overwriteETBTsStoredInMemory(loadResult.shapes);
 
                 _mainForm.mainDataGridView.InvokeFromAnotherThread(() =>
                 {
-                    _mainForm.mainDataGridView.DataSource = _iProcessOfficeFile.getShapesStoredInMemory().shapes;
+                    _mainForm.mainDataGridView.DataSource = _iProcessOfficeFile.getETBTsStoredInMemory().shapes;
                 });
             });
         }
@@ -167,7 +167,7 @@ namespace LaRottaO.OfficeTranslationTool
             {
                 Debug.WriteLine("No project .json found, loading shapes from Office file...");
 
-                var extractionResult = _iProcessOfficeFile.extractShapesFromFile();
+                var extractionResult = _iProcessOfficeFile.extractETBTsFromFile();
 
                 if (!extractionResult.success)
                 {
@@ -177,10 +177,10 @@ namespace LaRottaO.OfficeTranslationTool
 
                 _mainForm.mainDataGridView.InvokeFromAnotherThread(() =>
                 {
-                    _mainForm.mainDataGridView.DataSource = _iProcessOfficeFile.getShapesStoredInMemory().shapes;
+                    _mainForm.mainDataGridView.DataSource = _iProcessOfficeFile.getETBTsStoredInMemory().shapes;
                 });
 
-                var saveResult = SaveOfficeDocumentAsJson.save(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
+                var saveResult = SaveOfficeDocumentAsJson.save(_iProcessOfficeFile.getETBTsStoredInMemory().shapes);
 
                 if (!saveResult.success)
                 {
@@ -199,7 +199,7 @@ namespace LaRottaO.OfficeTranslationTool
 
         public (Boolean success, String errorReason) saveNewTranslationTypedByUserOnMainDgv(int row, int col, String newValue)
         {
-            var resultGetChangedValue = _iProcessOfficeFile.getShapeFromMemoryAtIndex(row);
+            var resultGetChangedValue = _iProcessOfficeFile.getETBTFromMemoryAtIndex(row);
 
             if (!resultGetChangedValue.success)
             {
@@ -213,7 +213,7 @@ namespace LaRottaO.OfficeTranslationTool
                 return (false, addChangedValueToDic.errorReason);
             }
 
-            var saveDocumentAsJson = SaveOfficeDocumentAsJson.save(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
+            var saveDocumentAsJson = SaveOfficeDocumentAsJson.save(_iProcessOfficeFile.getETBTsStoredInMemory().shapes);
 
             if (!saveDocumentAsJson.success)
             {
@@ -230,14 +230,14 @@ namespace LaRottaO.OfficeTranslationTool
                 return (false, "Replace in progress");
             }
 
-            var resultGetChangedValue = _iProcessOfficeFile.getShapeFromMemoryAtIndex(row);
+            var resultGetChangedValue = _iProcessOfficeFile.getETBTFromMemoryAtIndex(row);
 
             if (!resultGetChangedValue.success)
             {
                 return (false, resultGetChangedValue.errorReason);
             }
 
-            var selectShapeOnFile = _iProcessOfficeFile.navigateToShapeOnFile(resultGetChangedValue.shape);
+            var selectShapeOnFile = _iProcessOfficeFile.navigateToETBTOnFile(resultGetChangedValue.shape);
 
             if (!selectShapeOnFile.success)
             {
@@ -329,7 +329,7 @@ namespace LaRottaO.OfficeTranslationTool
 
                 //Iterate on all items
 
-                foreach (PptShape shapeUnderTranslation in _iProcessOfficeFile.getShapesStoredInMemory().shapes)
+                foreach (ElementToBeTranslated shapeUnderTranslation in _iProcessOfficeFile.getETBTsStoredInMemory().shapes)
                 {
                     //Check if the string is not a number, blank or pure symbols
 
@@ -393,21 +393,21 @@ namespace LaRottaO.OfficeTranslationTool
 
                 //Checks for partial text and replaces
 
-                var partialReplaceResult = _iDictionary.replacePartialExpressions(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
+                var partialReplaceResult = _iDictionary.replacePartialExpressions(_iProcessOfficeFile.getETBTsStoredInMemory().shapes);
 
                 if (!partialReplaceResult.success)
                 {
                     UIHelpers.showErrorMessage($"Unable to replace partial words.{partialReplaceResult.errorReason}");
                 }
 
-                _iProcessOfficeFile.overwriteShapesStoredInMemory(partialReplaceResult.replacedExpressions);
+                _iProcessOfficeFile.overwriteETBTsStoredInMemory(partialReplaceResult.replacedExpressions);
 
                 _mainForm.mainDataGridView.InvokeFromAnotherThread(() =>
                 {
                     _mainForm.mainDataGridView.Refresh();
                 });
 
-                SaveOfficeDocumentAsJson.save(_iProcessOfficeFile.getShapesStoredInMemory().shapes);
+                SaveOfficeDocumentAsJson.save(_iProcessOfficeFile.getETBTsStoredInMemory().shapes);
 
                 return (true, "");
             });
@@ -425,7 +425,7 @@ namespace LaRottaO.OfficeTranslationTool
 
                 //Iterate on all items
 
-                foreach (PptShape shapeUnderTranslation in _iProcessOfficeFile.getShapesStoredInMemory().shapes)
+                foreach (ElementToBeTranslated shapeUnderTranslation in _iProcessOfficeFile.getETBTsStoredInMemory().shapes)
                 {
                     //Check if the string is not a number, blank or pure symbols
 
@@ -441,7 +441,7 @@ namespace LaRottaO.OfficeTranslationTool
 
                     UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
 
-                    var replaceResult = _iProcessOfficeFile.replaceShapeText(shapeUnderTranslation, useOriginalText, useTranslatedText, true);
+                    var replaceResult = _iProcessOfficeFile.replaceETBTText(shapeUnderTranslation, useOriginalText, useTranslatedText, true);
 
                     /*
                     if (!replaceResult.success)
