@@ -360,6 +360,7 @@ namespace LaRottaO.OfficeTranslationTool
                         Debug.WriteLine($"{shapeUnderTranslation.originalText} found on local dictionary!");
                         shapeUnderTranslation.newText = localDicResult.termTranslation;
 
+                        //TODO: Put cursor on same place as before
                         _mainForm.mainDataGridView.InvokeFromAnotherThread(() =>
                         {
                             _mainForm.mainDataGridView.Refresh();
