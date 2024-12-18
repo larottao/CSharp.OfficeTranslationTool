@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LaRottaO.OfficeTranslationTool")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8d3207cf05717fad84d033b1fd0ee77532b16dfe")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1d6c0ba3991cb6726082fd11e25d15e62593e96c")]
 [assembly: System.Reflection.AssemblyProductAttribute("LaRottaO.OfficeTranslationTool")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LaRottaO.OfficeTranslationTool")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

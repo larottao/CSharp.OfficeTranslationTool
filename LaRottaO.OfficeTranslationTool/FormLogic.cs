@@ -56,8 +56,6 @@ namespace LaRottaO.OfficeTranslationTool
                     return;
                 }
 
-                //TODO: Add Word support
-
                 switch (extension.ToLower())
                 {
                     case ".json":
@@ -73,6 +71,13 @@ namespace LaRottaO.OfficeTranslationTool
                         await openOfficeFile(associatedFileName);
 
                         return;
+
+                    case ".docx":
+                    case ".doc":
+
+                        _iProcessOfficeFile = new ProcessWordUsingInterop();
+
+                        break;
 
                     case ".pptx":
                     case ".ppt":
@@ -435,39 +440,18 @@ namespace LaRottaO.OfficeTranslationTool
 
                     UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
 
-                    var navResult = _iProcessOfficeFile.navigateToShapeOnFile(shapeUnderTranslation);
-
-                    //*****************************************************************************
-                    //If it fails it cannot continue, because the shape to replace would be null.
-                    //You can abort all, or continue with the next one
-                    //******************************************************************************
-
-                    if (!navResult.success)
-                    {
-                        DialogResult dialogResult = UIHelpers.showYesNoQuestion($"Failed to find shape to replace. {navResult.errorReason} do you want to continue?");
-
-                        if (dialogResult == DialogResult.Yes)
-                        {
-                            continue;
-                        }
-                        else if (dialogResult == DialogResult.No)
-                        {
-                            return (false, navResult.errorReason);
-                        }
-                    }
-
-                    shapeUnderTranslation.originalShape = navResult.shape;
-
                     var replaceResult = _iProcessOfficeFile.replaceShapeText(shapeUnderTranslation, useOriginalText, useTranslatedText, true);
 
+                    /*
                     if (!replaceResult.success)
                     {
                         DialogResult dialogResult = UIHelpers.showYesNoQuestion($"Failed to replace shape text. {replaceResult.errorReason} Do you want to continue?");
                         if (dialogResult == DialogResult.No)
                         {
-                            return (false, navResult.errorReason);
+                            return (false, replaceResult.errorReason);
                         }
                     }
+                    */
                 }
 
                 return (true, "");

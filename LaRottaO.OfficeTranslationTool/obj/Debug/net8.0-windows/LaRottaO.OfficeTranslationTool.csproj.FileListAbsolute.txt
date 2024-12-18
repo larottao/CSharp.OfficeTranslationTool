@@ -47,3 +47,4 @@ C:\Repositorios\LaRottaO.OfficeTranslationTool\LaRottaO.OfficeTranslationTool\ob
 C:\Repositorios\LaRottaO.OfficeTranslationTool\LaRottaO.OfficeTranslationTool\obj\Debug\net8.0-windows\LaRottaO.OfficeTranslationTool.genruntimeconfig.cache
 C:\Repositorios\LaRottaO.OfficeTranslationTool\LaRottaO.OfficeTranslationTool\obj\Debug\net8.0-windows\ref\LaRottaO.OfficeTranslationTool.dll
 C:\Repositorios\LaRottaO.OfficeTranslationTool\LaRottaO.OfficeTranslationTool\obj\Debug\net8.0-windows\LaRottaO.OfficeTranslationTool.Properties.Resources.resources
+C:\Repositorios\LaRottaO.OfficeTranslationTool\LaRottaO.OfficeTranslationTool\bin\Debug\net8.0-windows\Microsoft.Office.Interop.Word.dll

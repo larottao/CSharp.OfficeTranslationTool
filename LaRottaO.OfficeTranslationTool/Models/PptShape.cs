@@ -1,9 +1,12 @@
 ﻿using Microsoft.Office.Interop.PowerPoint;
+using System;
 using System.ComponentModel;
+using static LaRottaO.OfficeTranslationTool.GlobalConstants;
+using static LaRottaO.OfficeTranslationTool.GlobalVariables;
 
 namespace LaRottaO.OfficeTranslationTool.Models
 {
-    internal class PptShape
+    public class PptShape
     {
         [Browsable(false)]
         public int indexOnPresentation { get; set; }
@@ -14,8 +17,11 @@ namespace LaRottaO.OfficeTranslationTool.Models
         [Browsable(false)]
         public int indexOnSlide { get; set; }
 
-        [Browsable(false)]
-        public int internalId { get; set; }
+        //[Browsable(false)]
+        public dynamic section { get; set; }
+
+        //[Browsable(false)]
+        public dynamic internalId { get; set; }
 
         [Browsable(false)]
         public Boolean belongsToATable { get; set; }
@@ -28,6 +34,10 @@ namespace LaRottaO.OfficeTranslationTool.Models
 
         [ColumnName("Info")]
         public String info { get; set; } = String.Empty;
+
+        //[Browsable(false)]
+        [ColumnName("Element type")]
+        public ElementType type { get; set; }
 
         [ColumnName("Original Text")]
         public String originalText { get; set; } = String.Empty;

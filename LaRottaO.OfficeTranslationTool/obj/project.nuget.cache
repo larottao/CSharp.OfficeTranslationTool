@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "HaDVxeVRcEA=",
+  "dgSpecHash": "szwRPDvQzhc=",
   "success": true,
   "projectFilePath": "C:\\Repositorios\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool\\LaRottaO.OfficeTranslationTool.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\LuisLaRotta\\.nuget\\packages\\microsoft.office.interop.word\\15.0.4797.1004\\microsoft.office.interop.word.15.0.4797.1004.nupkg.sha512",
     "C:\\Users\\LuisLaRotta\\.nuget\\packages\\microsoftofficecore\\15.0.0\\microsoftofficecore.15.0.0.nupkg.sha512",
     "C:\\Users\\LuisLaRotta\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\LuisLaRotta\\.nuget\\packages\\restsharp\\112.1.0\\restsharp.112.1.0.nupkg.sha512"

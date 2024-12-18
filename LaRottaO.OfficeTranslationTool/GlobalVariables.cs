@@ -6,11 +6,10 @@
         public static String selectedSourceLanguage { get; set; } = "";
         public static String selectedTargetLanguage { get; set; } = "";
         public static Boolean replaceInProgress { get; set; } = false;
-
         public static string? jsonDictionaryPath { get; set; } = "";
         public static String deepLUrl { get; set; } = "https://api-free.deepl.com/v2/translate";
 
-        //TODO REMOVE AND LOAD FROM FILE
+        //Just an example, made up key
         public static String deepLAuthKey { get; set; } = "e9c2c043-2be4-4465-94b0-cdaa26941cab:fx";
 
         public static Dictionary<string, string> AVAILABLE_LANGUAGES { get; } = new Dictionary<string, string>

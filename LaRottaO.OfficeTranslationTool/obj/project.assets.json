@@ -2,6 +2,15 @@
   "version": 3,
   "targets": {
     "net8.0-windows7.0": {
+      "Microsoft.Office.Interop.Word/15.0.4797.1004": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Office.Interop.Word.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Office.Interop.Word.dll": {}
+        }
+      },
       "MicrosoftOfficeCore/15.0.0": {
         "type": "package",
         "compile": {
@@ -40,6 +49,19 @@
     }
   },
   "libraries": {
+    "Microsoft.Office.Interop.Word/15.0.4797.1004": {
+      "sha512": "lavTOrMGK/o/t3+gGr7JuVrL8XDdnS0DwPLcYv/StOiysXO4L0C36IXTVtEJo1Mh9Aoxo9a8dgGcPi+faTlv0g==",
+      "type": "package",
+      "path": "microsoft.office.interop.word/15.0.4797.1004",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net20/Microsoft.Office.Interop.Word.dll",
+        "lib/netstandard2.0/Microsoft.Office.Interop.Word.dll",
+        "microsoft.office.interop.word.15.0.4797.1004.nupkg.sha512",
+        "microsoft.office.interop.word.nuspec"
+      ]
+    },
     "MicrosoftOfficeCore/15.0.0": {
       "sha512": "/KgYw8uvv0Ut8FPvyEa1XJ/TrLSRgvTv3JgC2IT0/8NwoICzbEJWfmfwsE6Dwi8WH0jVkTEO7zRvGvaKqUOhqQ==",
       "type": "package",
@@ -110,6 +132,7 @@
   },
   "projectFileDependencyGroups": {
     "net8.0-windows7.0": [
+      "Microsoft.Office.Interop.Word >= 15.0.4797.1004",
       "MicrosoftOfficeCore >= 15.0.0",
       "Newtonsoft.Json >= 13.0.3",
       "RestSharp >= 112.1.0"
@@ -160,6 +183,10 @@
       "net8.0-windows7.0": {
         "targetAlias": "net8.0-windows",
         "dependencies": {
+          "Microsoft.Office.Interop.Word": {
+            "target": "Package",
+            "version": "[15.0.4797.1004, )"
+          },
           "MicrosoftOfficeCore": {
             "target": "Package",
             "version": "[15.0.0, )"
