@@ -78,7 +78,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
                             {
                                 section = section.Index,
                                 internalId = paragraph.ParaID,
-                                originalText = text,
+                                originalText = paragraph.Range.Text.TrimEnd('\r', '\a').Trim(),
                                 type = GlobalConstants.ElementType.PARAGRAPH
                             });
                         }
@@ -203,33 +203,47 @@ namespace LaRottaO.OfficeTranslationTool.Services
             return (true, "");
         }
 
-        public (bool success, string errorReason) replaceShapeText(PptShape shape, Boolean useOriginalText, Boolean useTranslatedText, Boolean shrinkIfNecessary)
+        public (bool success, string errorReason) replaceShapeText(PptShape shape, bool useOriginalText, bool useTranslatedText, bool shrinkIfNecessary)
         {
             try
             {
                 if (shape.type == GlobalConstants.ElementType.PARAGRAPH)
                 {
-                    foreach (Section theSection in wordDocument.Sections)
+                    foreach (Section section in wordDocument.Sections)
                     {
-                        Debug.WriteLine(theSection.Index);
+                        Debug.WriteLine($"Processing Section: {section.Index}");
 
-                        foreach (Paragraph theParagraph in theSection.Range.Paragraphs)
+                        // Iterate through paragraphs in the section
+                        foreach (Paragraph paragraph in section.Range.Paragraphs)
                         {
-                            if (theParagraph.ParaID == shape.internalId)
+                            string originalText = paragraph.Range.Text.TrimEnd('\r', '\a').Trim();
+
+                            // If the paragraph contains the original text, replace it
+                            if (originalText.Contains(shape.originalText))
                             {
-                                Debug.WriteLine($"found:{theParagraph.ParaID}");
-                                theParagraph.Range.Text = shape.newText;
-                                break;
+                                Debug.WriteLine($"Found matching paragraph. Replacing text: '{shape.originalText}' with '{shape.newText}'");
+
+                                // Replace the text using the Replace method
+                                paragraph.Range.Find.Execute(
+                                    FindText: shape.originalText,
+                                    ReplaceWith: shape.newText,
+                                    Replace: WdReplace.wdReplaceOne
+                                );
+
+                                return (true, string.Empty);
                             }
                         }
                     }
+
+                    // If no matching paragraph is found
+                    return (false, "Paragraph with specified original text not found.");
                 }
 
-                return (true, $"");
+                return (true, string.Empty); // Not a paragraph, no action taken
             }
             catch (Exception ex)
             {
-                return (false, $"Unable to replace shape text: {ex.ToString()}");
+                return (false, $"Error replacing shape text: {ex.Message}");
             }
         }
 
