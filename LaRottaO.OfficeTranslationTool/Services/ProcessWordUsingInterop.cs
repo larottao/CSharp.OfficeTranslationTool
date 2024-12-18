@@ -207,53 +207,84 @@ namespace LaRottaO.OfficeTranslationTool.Services
         {
             try
             {
-                if (shape.type == GlobalConstants.ElementType.PARAGRAPH)
+                switch (shape.type)
                 {
-                    var find = wordDocument.Content.Find;
-                    find.ClearFormatting();
-                    find.Text = shape.originalText.Substring(0, Math.Min(shape.originalText.Length, 255)); // Limit Find text length
-                    find.Replacement.ClearFormatting();
-
-                    // Break new text into manageable chunks if too long
-                    string replacementText = shape.newText;
-                    if (replacementText.Length > 255)
-                    {
-                        // Split replacement into multiple smaller replacements
-                        int chunkSize = 255;
-                        for (int i = 0; i < replacementText.Length; i += chunkSize)
+                    case GlobalConstants.ElementType.PARAGRAPH:
+                        foreach (Section section in wordDocument.Sections)
                         {
-                            string chunk = replacementText.Substring(i, Math.Min(chunkSize, replacementText.Length - i));
-
-                            // Execute Find and Replace for the chunk
-                            bool found = find.Execute(
-                                ReplaceWith: chunk,
-                                Replace: WdReplace.wdReplaceOne
-                            );
-
-                            if (!found)
+                            foreach (Paragraph paragraph in section.Range.Paragraphs)
                             {
-                                return (false, $"Text not found during chunked replacement: '{shape.originalText}'");
+                                if (paragraph.ParaID == shape.internalId)
+                                {
+                                    string originalText = paragraph.Range.Text.TrimEnd('\r', '\a').Trim();
+
+                                    if (originalText.Contains(shape.originalText))
+                                    {
+                                        // Preserve leading and trailing whitespace or special characters
+                                        string fullText = paragraph.Range.Text;
+                                        string leadingText = fullText.Substring(0, fullText.IndexOf(shape.originalText));
+                                        string trailingText = fullText.Substring(fullText.IndexOf(shape.originalText) + shape.originalText.Length);
+
+                                        // Replace the text
+                                        paragraph.Range.Text = leadingText + shape.newText + trailingText;
+
+                                        return (true, string.Empty);
+                                    }
+                                    else
+                                    {
+                                        return (false, $"Text mismatch for paragraph with ID {shape.internalId}.");
+                                    }
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        // Replace directly if text is within acceptable length
-                        find.Replacement.Text = replacementText;
-                        bool found = find.Execute(
-                            Replace: WdReplace.wdReplaceOne
-                        );
+                        return (false, $"Paragraph with ID {shape.internalId} not found.");
 
-                        if (!found)
+                    case GlobalConstants.ElementType.SHAPE:
+                        foreach (Section section in wordDocument.Sections)
                         {
-                            return (false, $"Text not found: '{shape.originalText}'");
+                            foreach (Shape wordShape in section.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary].Shapes)
+                            {
+                                if (wordShape.ID == shape.internalId && wordShape.TextFrame.HasText == -1)
+                                {
+                                    string fullText = wordShape.TextFrame.TextRange.Text;
+                                    string leadingText = fullText.Substring(0, fullText.IndexOf(shape.originalText));
+                                    string trailingText = fullText.Substring(fullText.IndexOf(shape.originalText) + shape.originalText.Length);
+
+                                    wordShape.TextFrame.TextRange.Text = leadingText + shape.newText + trailingText;
+                                    return (true, string.Empty);
+                                }
+                            }
                         }
-                    }
+                        return (false, $"Shape with ID {shape.internalId} not found.");
 
-                    return (true, string.Empty);
+                    case GlobalConstants.ElementType.TABLE:
+                        foreach (Table table in wordDocument.Tables)
+                        {
+                            if (table.ID == shape.internalId)
+                            {
+                                foreach (Row row in table.Rows)
+                                {
+                                    foreach (Cell cell in row.Cells)
+                                    {
+                                        if (cell.Range.Text.Contains(shape.originalText))
+                                        {
+                                            string fullText = cell.Range.Text;
+                                            string leadingText = fullText.Substring(0, fullText.IndexOf(shape.originalText));
+                                            string trailingText = fullText.Substring(fullText.IndexOf(shape.originalText) + shape.originalText.Length);
+
+                                            cell.Range.Text = leadingText + shape.newText + trailingText;
+                                            return (true, string.Empty);
+                                        }
+                                    }
+                                }
+                                return (false, $"Text not found in table with ID {shape.internalId}.");
+                            }
+                        }
+                        return (false, $"Table with ID {shape.internalId} not found.");
+
+                    default:
+                        return (false, "Unsupported shape type.");
                 }
-
-                return (true, string.Empty); // Not a paragraph, no action taken
             }
             catch (Exception ex)
             {
