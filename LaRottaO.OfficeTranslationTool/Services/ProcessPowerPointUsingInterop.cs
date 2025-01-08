@@ -282,7 +282,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
             return (true, "");
         }
 
-        public (bool success, string errorReason) replaceETBTText(ElementToBeTranslated pptShape, Boolean useOriginalText, Boolean useTranslatedText, Boolean shrinkIfNecessary)
+        public (bool success, string errorReason) replaceETBTText(ElementToBeTranslated pptShape, Boolean useOriginalText, Boolean useTranslatedText)
         {
             try
             {
@@ -518,6 +518,11 @@ namespace LaRottaO.OfficeTranslationTool.Services
         public (bool success, string errorReason) saveChangesOnFile()
         {
             //TODO
+            throw new NotImplementedException();
+        }
+
+        public (bool success, string errorReason) replaceAllETBTsText(List<ElementToBeTranslated> elementsToBeTranslated, bool useOriginalText, bool useTranslatedText)
+        {
             throw new NotImplementedException();
         }
     }

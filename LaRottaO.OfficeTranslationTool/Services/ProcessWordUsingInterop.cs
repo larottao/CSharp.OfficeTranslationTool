@@ -308,5 +308,15 @@ namespace LaRottaO.OfficeTranslationTool.Services
         {
             return (false, "", null);
         }
+
+        public (bool success, string errorReason) replaceETBTText(ElementToBeTranslated elementToBeTranslated, bool useOriginalText, bool useTranslatedText)
+        {
+            throw new NotImplementedException();
+        }
+
+        public (bool success, string errorReason) replaceAllETBTsText(List<ElementToBeTranslated> elementsToBeTranslated, bool useOriginalText, bool useTranslatedText)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

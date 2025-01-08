@@ -24,7 +24,9 @@ namespace LaRottaO.OfficeTranslationTool.Interfaces
 
         (bool success, string errorReason, Shape? shape) navigateToETBTOnFile(ElementToBeTranslated elementToBeTranslated);
 
-        (bool success, string errorReason) replaceETBTText(ElementToBeTranslated elementToBeTranslated, Boolean useOriginalText, Boolean useTranslatedText, Boolean shrinkIfNecessary);
+        (bool success, string errorReason) replaceETBTText(ElementToBeTranslated elementToBeTranslated, Boolean useOriginalText, Boolean useTranslatedText);
+
+        (bool success, string errorReason) replaceAllETBTsText(List<ElementToBeTranslated> elementsToBeTranslated, Boolean useOriginalText, Boolean useTranslatedText);
 
         (bool success, string errorReason) saveChangesOnFile();
 

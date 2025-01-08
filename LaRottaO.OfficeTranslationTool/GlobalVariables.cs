@@ -3,6 +3,7 @@
     internal class GlobalVariables
     {
         public static String currentOfficeDocPath { get; set; } = "";
+        public static String currentOfficeDocExtension { get; set; } = "";
         public static String selectedSourceLanguage { get; set; } = "";
         public static String selectedTargetLanguage { get; set; } = "";
         public static Boolean replaceInProgress { get; set; } = false;

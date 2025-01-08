@@ -48,7 +48,7 @@ namespace LaRottaO.OfficeTranslationTool
         {
             await Task.Run(async () =>
             {
-                string extension = Path.GetExtension(fileName);
+                currentOfficeDocExtension = Path.GetExtension(fileName);
 
                 if (!File.Exists(fileName))
                 {
@@ -56,7 +56,7 @@ namespace LaRottaO.OfficeTranslationTool
                     return;
                 }
 
-                switch (extension.ToLower())
+                switch (currentOfficeDocExtension.ToLower())
                 {
                     case ".json":
 
@@ -75,7 +75,7 @@ namespace LaRottaO.OfficeTranslationTool
                     case ".docx":
                     case ".doc":
 
-                        _iProcessOfficeFile = new ProcessWordUsingInterop();
+                        _iProcessOfficeFile = new ProcessWordUsingXML();
 
                         break;
 
@@ -343,7 +343,7 @@ namespace LaRottaO.OfficeTranslationTool
                         continue;
                     }
 
-                    UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
+                    //UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
 
                     //Check if the term exists in local dictionary as a complete word
 
@@ -360,11 +360,7 @@ namespace LaRottaO.OfficeTranslationTool
                         Debug.WriteLine($"{shapeUnderTranslation.originalText} found on local dictionary!");
                         shapeUnderTranslation.newText = localDicResult.termTranslation;
 
-                        //TODO: Put cursor on same place as before
-                        _mainForm.mainDataGridView.InvokeFromAnotherThread(() =>
-                        {
-                            _mainForm.mainDataGridView.Refresh();
-                        });
+                        _mainForm.mainDataGridView.RefreshFromAnotherThreadKeepingFocus();
 
                         continue;
                     }
@@ -385,10 +381,7 @@ namespace LaRottaO.OfficeTranslationTool
                     shapeUnderTranslation.newText = apiResult.translatedText;
                     _iDictionary.addOrUpdateLocalDictionary(shapeUnderTranslation.originalText, apiResult.translatedText, false);
 
-                    _mainForm.mainDataGridView.InvokeFromAnotherThread(() =>
-                    {
-                        _mainForm.mainDataGridView.Refresh();
-                    });
+                    _mainForm.mainDataGridView.RefreshFromAnotherThreadKeepingFocus();
                 }
 
                 //Checks for partial text and replaces
@@ -402,10 +395,7 @@ namespace LaRottaO.OfficeTranslationTool
 
                 _iProcessOfficeFile.overwriteETBTsStoredInMemory(partialReplaceResult.replacedExpressions);
 
-                _mainForm.mainDataGridView.InvokeFromAnotherThread(() =>
-                {
-                    _mainForm.mainDataGridView.Refresh();
-                });
+                _mainForm.mainDataGridView.RefreshFromAnotherThreadKeepingFocus();
 
                 SaveOfficeDocumentAsJson.save(_iProcessOfficeFile.getETBTsStoredInMemory().shapes);
 
@@ -423,41 +413,46 @@ namespace LaRottaO.OfficeTranslationTool
 
                 _iDictionary.initializeLocalDictionary();
 
-                //Iterate on all items
-
-                foreach (ElementToBeTranslated shapeUnderTranslation in _iProcessOfficeFile.getETBTsStoredInMemory().shapes)
+                switch (currentOfficeDocExtension.ToLower())
                 {
-                    //Check if the string is not a number, blank or pure symbols
+                    case ".docx":
+                    case ".doc":
 
-                    if (string.IsNullOrEmpty(shapeUnderTranslation.originalText))
-                    {
-                        continue;
-                    }
+                        _iProcessOfficeFile.replaceAllETBTsText(_iProcessOfficeFile.getETBTsStoredInMemory().shapes, useOriginalText, useTranslatedText);
 
-                    if (!shapeUnderTranslation.originalText.Any(char.IsLetter))
-                    {
-                        continue;
-                    }
+                        break;
 
-                    UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
+                    case ".pptx":
+                    case ".ppt":
 
-                    var replaceResult = _iProcessOfficeFile.replaceETBTText(shapeUnderTranslation, useOriginalText, useTranslatedText, true);
-
-                    /*
-                    if (!replaceResult.success)
-                    {
-                        DialogResult dialogResult = UIHelpers.showYesNoQuestion($"Failed to replace shape text. {replaceResult.errorReason} Do you want to continue?");
-                        if (dialogResult == DialogResult.No)
+                        foreach (ElementToBeTranslated shapeUnderTranslation in _iProcessOfficeFile.getETBTsStoredInMemory().shapes)
                         {
-                            return (false, replaceResult.errorReason);
+                            //Check if the string is not a number, blank or pure symbols
+
+                            if (string.IsNullOrEmpty(shapeUnderTranslation.originalText))
+                            {
+                                continue;
+                            }
+
+                            if (!shapeUnderTranslation.originalText.Any(char.IsLetter))
+                            {
+                                continue;
+                            }
+
+                            UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
+
+                            _iProcessOfficeFile.replaceETBTText(shapeUnderTranslation, useOriginalText, useTranslatedText);
                         }
-                    }
-                    */
+
+                        break;
+
+                    case ".xlsx":
+                    case ".xls":
+
+                        break;
                 }
 
                 return (true, "");
-
-                ///////////////////
             });
 
             return (true, "");
