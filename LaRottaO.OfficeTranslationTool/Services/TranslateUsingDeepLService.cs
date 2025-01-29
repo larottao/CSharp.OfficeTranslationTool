@@ -7,6 +7,16 @@ namespace LaRottaO.OfficeTranslationTool.Services
 {
     internal class TranslateUsingDeepLService : ITranslation
     {
+        public (bool success, string errorReason) init()
+        {
+            return (true, "");
+        }
+
+        public (bool success, string errorReason) terminate()
+        {
+            return (true, "");
+        }
+
         public (bool success, string errorReason, string translatedText) translate(string term)
         {
             if (String.IsNullOrEmpty(deepLUrl))

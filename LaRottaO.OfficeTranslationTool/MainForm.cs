@@ -38,6 +38,13 @@ namespace LaRottaO.OfficeTranslationTool
                 comboBoxSourceLanguage.Items.Add(lang.Key);
                 comboBoxDestLanguage.Items.Add(lang.Key);
             }
+
+            foreach (KeyValuePair<String, TRANSLATION_METHOD> method in AVAILABLE_TRANSLATION_METHODS)
+            {
+                comboBoxTranslationMethod.Items.Add(method.Key);
+            }
+
+            comboBoxTranslationMethod.SelectedIndex = 0;
         }
 
         private async void buttonOpenOfficeFile_Click(object sender, EventArgs e)
@@ -158,7 +165,7 @@ namespace LaRottaO.OfficeTranslationTool
                 return;
             }
 
-            var transResult = await formLogic.translateAllShapeElements(comboBoxSourceLanguage.Text, comboBoxDestLanguage.Text);
+            var transResult = await formLogic.translateAllShapeElements();
 
             if (transResult.success)
             {

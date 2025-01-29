@@ -14,7 +14,7 @@ namespace LaRottaO.OfficeTranslationTool
 
         private readonly ILocalDictionary _iDictionary = new JsonDictionaryService();
 
-        private readonly ITranslation _itranslation = new TranslateUsingDeepLService();
+        private ITranslation _itranslation;
 
         private readonly MainForm _mainForm = mainForm;
 
@@ -321,10 +321,30 @@ namespace LaRottaO.OfficeTranslationTool
             return addResult;
         }
 
-        public async Task<(Boolean success, String errorReason)> translateAllShapeElements(String sourceLanguage, String targetLanguage)
+        public async Task<(Boolean success, String errorReason)> translateAllShapeElements()
         {
             await Task.Run(() =>
             {
+                switch (GlobalVariables.selectedTranslationMethod)
+                {
+                    case TRANSLATION_METHOD.DEEP_L_API:
+
+                        _itranslation = new TranslateUsingDeepLService();
+                        break;
+
+                    case TRANSLATION_METHOD.GOOGLE_TRANS_WEB:
+
+                        _itranslation = new TranslateUsingGoogleTranslate();
+                        break;
+                }
+
+                var initResult = _itranslation.init();
+
+                if (!initResult.success)
+                {
+                    return (false, initResult.errorReason);
+                }
+
                 _iDictionary.initializeLocalDictionary();
 
                 //Iterate on all items

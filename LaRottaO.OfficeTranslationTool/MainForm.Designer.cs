@@ -31,6 +31,7 @@
             mainDataGridView = new DataGridView();
             buttonOpenOfficeFile = new Button();
             panel1 = new Panel();
+            comboBoxTranslationMethod = new ComboBox();
             buttonLunchConfig = new Button();
             buttonRevertChanges = new Button();
             buttonApplyChanges = new Button();
@@ -65,9 +66,9 @@
             // 
             mainDataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             mainDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            mainDataGridView.Location = new Point(12, 83);
+            mainDataGridView.Location = new Point(12, 109);
             mainDataGridView.Name = "mainDataGridView";
-            mainDataGridView.Size = new Size(1080, 457);
+            mainDataGridView.Size = new Size(1080, 455);
             mainDataGridView.TabIndex = 0;
             mainDataGridView.CellBeginEdit += dataGridView_CellBeginEdit;
             mainDataGridView.CellEndEdit += dataGridView_CellEndEdit;
@@ -80,7 +81,7 @@
             buttonOpenOfficeFile.FlatAppearance.BorderColor = Color.Silver;
             buttonOpenOfficeFile.FlatAppearance.BorderSize = 2;
             buttonOpenOfficeFile.FlatStyle = FlatStyle.Flat;
-            buttonOpenOfficeFile.Location = new Point(12, 12);
+            buttonOpenOfficeFile.Location = new Point(12, 18);
             buttonOpenOfficeFile.Name = "buttonOpenOfficeFile";
             buttonOpenOfficeFile.Size = new Size(174, 37);
             buttonOpenOfficeFile.TabIndex = 1;
@@ -90,6 +91,7 @@
             // 
             // panel1
             // 
+            panel1.Controls.Add(comboBoxTranslationMethod);
             panel1.Controls.Add(buttonLunchConfig);
             panel1.Controls.Add(buttonRevertChanges);
             panel1.Controls.Add(buttonApplyChanges);
@@ -102,15 +104,25 @@
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(1104, 64);
+            panel1.Size = new Size(1104, 95);
             panel1.TabIndex = 2;
+            // 
+            // comboBoxTranslationMethod
+            // 
+            comboBoxTranslationMethod.BackColor = SystemColors.ControlLight;
+            comboBoxTranslationMethod.FlatStyle = FlatStyle.Flat;
+            comboBoxTranslationMethod.FormattingEnabled = true;
+            comboBoxTranslationMethod.Location = new Point(456, 61);
+            comboBoxTranslationMethod.Name = "comboBoxTranslationMethod";
+            comboBoxTranslationMethod.Size = new Size(174, 23);
+            comboBoxTranslationMethod.TabIndex = 11;
             // 
             // buttonLunchConfig
             // 
             buttonLunchConfig.FlatAppearance.BorderColor = Color.Silver;
             buttonLunchConfig.FlatAppearance.BorderSize = 2;
             buttonLunchConfig.FlatStyle = FlatStyle.Flat;
-            buttonLunchConfig.Location = new Point(1031, 12);
+            buttonLunchConfig.Location = new Point(1031, 18);
             buttonLunchConfig.Name = "buttonLunchConfig";
             buttonLunchConfig.Size = new Size(61, 37);
             buttonLunchConfig.TabIndex = 10;
@@ -123,7 +135,7 @@
             buttonRevertChanges.FlatAppearance.BorderColor = Color.Silver;
             buttonRevertChanges.FlatAppearance.BorderSize = 2;
             buttonRevertChanges.FlatStyle = FlatStyle.Flat;
-            buttonRevertChanges.Location = new Point(840, 12);
+            buttonRevertChanges.Location = new Point(840, 18);
             buttonRevertChanges.Name = "buttonRevertChanges";
             buttonRevertChanges.Size = new Size(174, 37);
             buttonRevertChanges.TabIndex = 9;
@@ -136,7 +148,7 @@
             buttonApplyChanges.FlatAppearance.BorderColor = Color.Silver;
             buttonApplyChanges.FlatAppearance.BorderSize = 2;
             buttonApplyChanges.FlatStyle = FlatStyle.Flat;
-            buttonApplyChanges.Location = new Point(648, 12);
+            buttonApplyChanges.Location = new Point(648, 18);
             buttonApplyChanges.Name = "buttonApplyChanges";
             buttonApplyChanges.Size = new Size(174, 37);
             buttonApplyChanges.TabIndex = 8;
@@ -147,7 +159,7 @@
             // label2
             // 
             label2.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label2.Location = new Point(330, 7);
+            label2.Location = new Point(330, 8);
             label2.Name = "label2";
             label2.Size = new Size(108, 13);
             label2.TabIndex = 7;
@@ -157,7 +169,7 @@
             // label1
             // 
             label1.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(206, 7);
+            label1.Location = new Point(206, 8);
             label1.Name = "label1";
             label1.Size = new Size(108, 13);
             label1.TabIndex = 6;
@@ -169,7 +181,7 @@
             buttonTranslateAll.FlatAppearance.BorderColor = Color.Silver;
             buttonTranslateAll.FlatAppearance.BorderSize = 2;
             buttonTranslateAll.FlatStyle = FlatStyle.Flat;
-            buttonTranslateAll.Location = new Point(456, 12);
+            buttonTranslateAll.Location = new Point(456, 18);
             buttonTranslateAll.Name = "buttonTranslateAll";
             buttonTranslateAll.Size = new Size(174, 37);
             buttonTranslateAll.TabIndex = 5;
@@ -182,7 +194,7 @@
             comboBoxDestLanguage.BackColor = SystemColors.ControlLight;
             comboBoxDestLanguage.FlatStyle = FlatStyle.Flat;
             comboBoxDestLanguage.FormattingEnabled = true;
-            comboBoxDestLanguage.Location = new Point(330, 24);
+            comboBoxDestLanguage.Location = new Point(330, 30);
             comboBoxDestLanguage.Name = "comboBoxDestLanguage";
             comboBoxDestLanguage.Size = new Size(108, 23);
             comboBoxDestLanguage.TabIndex = 4;
@@ -193,7 +205,7 @@
             comboBoxSourceLanguage.BackColor = SystemColors.ControlLight;
             comboBoxSourceLanguage.FlatStyle = FlatStyle.Flat;
             comboBoxSourceLanguage.FormattingEnabled = true;
-            comboBoxSourceLanguage.Location = new Point(204, 24);
+            comboBoxSourceLanguage.Location = new Point(204, 30);
             comboBoxSourceLanguage.Name = "comboBoxSourceLanguage";
             comboBoxSourceLanguage.Size = new Size(108, 23);
             comboBoxSourceLanguage.TabIndex = 3;
@@ -205,7 +217,7 @@
             dataGridViewPartialExpressions.Location = new Point(19, 18);
             dataGridViewPartialExpressions.Name = "dataGridViewPartialExpressions";
             dataGridViewPartialExpressions.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            dataGridViewPartialExpressions.Size = new Size(454, 389);
+            dataGridViewPartialExpressions.Size = new Size(454, 391);
             dataGridViewPartialExpressions.TabIndex = 10;
             dataGridViewPartialExpressions.CellContentClick += dataGridViewPartialExpressions_CellContentClick;
             dataGridViewPartialExpressions.RowEnter += dataGridViewPartialExpressions_RowEnter;
@@ -214,10 +226,10 @@
             // 
             tabControlConfig.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tabControlConfig.Controls.Add(partialExpressionsTab);
-            tabControlConfig.Location = new Point(12, 83);
+            tabControlConfig.Location = new Point(12, 109);
             tabControlConfig.Name = "tabControlConfig";
             tabControlConfig.SelectedIndex = 0;
-            tabControlConfig.Size = new Size(1080, 457);
+            tabControlConfig.Size = new Size(1080, 455);
             tabControlConfig.TabIndex = 11;
             tabControlConfig.Visible = false;
             // 
@@ -233,7 +245,7 @@
             partialExpressionsTab.Location = new Point(4, 24);
             partialExpressionsTab.Name = "partialExpressionsTab";
             partialExpressionsTab.Padding = new Padding(3);
-            partialExpressionsTab.Size = new Size(1072, 429);
+            partialExpressionsTab.Size = new Size(1072, 427);
             partialExpressionsTab.TabIndex = 0;
             partialExpressionsTab.Text = "Partial Expressions";
             partialExpressionsTab.UseVisualStyleBackColor = true;
@@ -304,7 +316,7 @@
             buttonSaveConfig.FlatAppearance.BorderColor = Color.Silver;
             buttonSaveConfig.FlatAppearance.BorderSize = 2;
             buttonSaveConfig.FlatStyle = FlatStyle.Flat;
-            buttonSaveConfig.Location = new Point(914, 546);
+            buttonSaveConfig.Location = new Point(918, 584);
             buttonSaveConfig.Name = "buttonSaveConfig";
             buttonSaveConfig.Size = new Size(174, 37);
             buttonSaveConfig.TabIndex = 12;
@@ -327,7 +339,7 @@
             // 
             panelLoading.Controls.Add(label5);
             panelLoading.Controls.Add(pictureBoxLoading);
-            panelLoading.Location = new Point(12, 542);
+            panelLoading.Location = new Point(12, 573);
             panelLoading.Name = "panelLoading";
             panelLoading.Size = new Size(315, 48);
             panelLoading.TabIndex = 17;
@@ -346,7 +358,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1104, 591);
+            ClientSize = new Size(1104, 629);
             Controls.Add(panelLoading);
             Controls.Add(buttonSaveConfig);
             Controls.Add(tabControlConfig);
@@ -394,5 +406,6 @@
         private PictureBox pictureBoxLoading;
         private Label label5;
         public Panel panelLoading;
+        private ComboBox comboBoxTranslationMethod;
     }
 }
