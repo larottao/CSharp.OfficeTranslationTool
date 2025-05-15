@@ -292,5 +292,10 @@ namespace LaRottaO.OfficeTranslationTool.Services
                 }
             }
         }
+
+        public (bool success, string errorReason) setETBTProofLang(ElementToBeTranslated elementToBeTranslated, TransLang targetLang)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

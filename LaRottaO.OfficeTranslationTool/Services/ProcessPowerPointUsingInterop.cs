@@ -525,151 +525,48 @@ namespace LaRottaO.OfficeTranslationTool.Services
         {
             throw new NotImplementedException();
         }
-    }
-}
 
-/*
-public (bool success, string errorReason) extractShapesFromFileOriginalImp()
-{
-    try
-    {
-        shapesInPresentation = new List<PptShape>();
-
-        int indexOnPresentationCounter = 0;
-
-        foreach (Slide slide in pptPresentation.Slides)
+        public (bool success, string errorReason) setETBTProofLang(ElementToBeTranslated elementToBeTranslated, TransLang targetLang)
         {
-            foreach (Microsoft.Office.Interop.PowerPoint.Shape shape in slide.Shapes)
+            try
             {
-                try
+                var navResult = navigateToETBTOnFile(elementToBeTranslated);
+
+                //*****************************************************************************
+                //If it fails it cannot continue, because the shape to replace would be null.
+                //******************************************************************************
+
+                if (!navResult.success)
                 {
-                    if (shape.Type == Microsoft.Office.Core.MsoShapeType.msoGroup)
-                    {
-                        shape.Ungroup();
-                    }
+                    return (false, navResult.errorReason);
                 }
-                catch (Exception ex)
+
+                elementToBeTranslated.originalPptxShape = navResult.shape;
+
+
+                TextRange textRange = null;
+
+                if (elementToBeTranslated.originalPptxShape == null || elementToBeTranslated.originalPptxShape.HasTextFrame != MsoTriState.msoTrue || elementToBeTranslated.originalPptxShape.TextFrame.HasText != MsoTriState.msoTrue)
                 {
-                    Debug.WriteLine($"DEBUG: Unable to ungroup the shape with Id: {slide.SlideID} on Slide: {slide.SlideNumber}. Reason: {ex.ToString()}");
-                    continue;
+                    return (false, "Unable to set proofing language, element has no text frame");
+                }                
+
+                textRange = elementToBeTranslated.originalPptxShape.TextFrame.TextRange;
+
+                if (textRange == null)
+                {
+                    return (false, "Unable to set proofing language, No text range to set");
                 }
+
+                 textRange.LanguageID = targetLang.officeLanguageId;                        
+                
+
+                return (true, "");
             }
-
-            int indexOnSlideCounter = 0;
-
-            foreach (Shape shape in slide.Shapes)
+            catch (Exception ex)
             {
-                if (shape.HasTextFrame == MsoTriState.msoTrue)
-                {
-                    if (shape.TextFrame.HasText == MsoTriState.msoTrue)
-                    {
-                        var textRange = shape.TextFrame.TextRange;
-
-                        PptShape newElement = new PptShape();
-
-                        newElement.internalId = shape.Id;
-
-                        newElement.belongsToATable = false;
-                        newElement.indexOnPresentation = indexOnPresentationCounter;
-                        newElement.indexOnSlide = indexOnSlideCounter;
-                        newElement.slideNumber = slide.SlideNumber;
-                        newElement.info = $"Slide {slide.SlideNumber} Text {shape.Id}";
-                        newElement.originalText = textRange.Text.ToString();
-
-                        shapesInPresentation.Add(newElement);
-                    }
-                }
-                else if (shape.HasTable == MsoTriState.msoTrue)
-                {
-                    Table table = shape.Table;
-
-                    for (int col = 1; col <= table.Columns.Count; col++)
-                    {
-                        for (int row = 1; row <= table.Rows.Count; row++)
-                        {
-                            Cell cell = table.Cell(row, col);
-
-                            Microsoft.Office.Interop.PowerPoint.Shape cellShape = cell.Shape;
-
-                            if (cellShape.HasTextFrame == MsoTriState.msoTrue && cellShape.TextFrame.HasText == MsoTriState.msoTrue)
-                            {
-                                var textRange = cellShape.TextFrame.TextRange;
-
-                                PptShape newElement = new PptShape();
-
-                                newElement.internalId = shape.Id;
-
-                                newElement.belongsToATable = true;
-                                newElement.parentTableRow = row;
-                                newElement.parentTableColumn = col;
-
-                                newElement.indexOnPresentation = indexOnPresentationCounter;
-                                newElement.indexOnSlide = indexOnSlideCounter;
-                                newElement.slideNumber = slide.SlideNumber;
-                                newElement.info = $"Slide {slide.SlideNumber} Table {shape.Id} {row},{col}";
-                                newElement.originalText = textRange.Text.ToString();
-
-                                shapesInPresentation.Add(newElement);
-                            }
-                        }
-                    }
-                }
-
-                indexOnSlideCounter++;
-            } //End foreach (Shape shape in slide.Shapes)
-
-            indexOnPresentationCounter++;
-        } //End foreach (Slide slide in pptPresentation.Slides)
-
-        return (true, "");
-    }
-    catch (Exception ex)
-    {
-        return (false, ex.ToString());
-    }
-}
-private static (bool success, string errorReason) replaceShapeInnerTextOriginalImp(PptShape shape, Boolean useOriginalText, Boolean useTranslatedText)
-{
-    try
-    {
-        if (shape.belongsToATable)
-        {
-            Shape tableShape = shape.originalShape;
-            Table table = tableShape.Table;
-
-            Cell cell = table.Cell(shape.parentTableRow, shape.parentTableColumn);
-
-            Shape cellShape = cell.Shape;
-
-            if (useTranslatedText)
-            {
-                cellShape.TextFrame.TextRange.Text = shape.newText;
-            }
-
-            if (useOriginalText)
-            {
-                cellShape.TextFrame.TextRange.Text = shape.originalText;
+                return (false, ex.ToString());
             }
         }
-        else
-        {
-            if (useTranslatedText)
-            {
-                shape.originalShape.TextFrame.TextRange.Text = shape.newText;
-            }
-
-            if (useOriginalText)
-            {
-                shape.originalShape.TextFrame.TextRange.Text = shape.originalText;
-            }
-        }
-
-        return (true, "");
-    }
-    catch (Exception ex)
-    {
-        return (false, $"Unable to replace shape inner text {ex.ToString()}");
     }
 }
-
-*/

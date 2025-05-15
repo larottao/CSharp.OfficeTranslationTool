@@ -3,6 +3,7 @@ using LaRottaO.OfficeTranslationTool.Utils;
 
 using System.ComponentModel;
 using static LaRottaO.OfficeTranslationTool.GlobalVariables;
+using static LaRottaO.OfficeTranslationTool.GlobalConstants;
 
 namespace LaRottaO.OfficeTranslationTool
 {
@@ -33,7 +34,7 @@ namespace LaRottaO.OfficeTranslationTool
                 UIHelpers.showErrorMessage(loadSettingsResult.errorReason);
             }
 
-            foreach (KeyValuePair<String, String> lang in AVAILABLE_LANGUAGES)
+            foreach (KeyValuePair<String, TransLang> lang in AVAILABLE_TRANS_LANGS)
             {
                 comboBoxSourceLanguage.Items.Add(lang.Key);
                 comboBoxDestLanguage.Items.Add(lang.Key);
@@ -194,9 +195,17 @@ namespace LaRottaO.OfficeTranslationTool
 
         private async void buttonApplyChanges_Click(object sender, EventArgs e)
         {
+        
+
+            if (!formLogic.areBothSourceAndDestintionLanguagesSet())
+            {
+                UIHelpers.showInformationMessage("Please select the Source and Target languages first.");
+                return;
+            }
+
             replaceInProgress = true;
 
-            var replaceResult = await formLogic.applyChangesOnOfficeFile(false, true);
+            var replaceResult = await formLogic.applyChangesOnOfficeFile(false, true, checkBoxPauseAfterSlide.Checked, checkBoxChangeProofLang.Checked);
 
             if (replaceResult.success)
             {
@@ -213,7 +222,7 @@ namespace LaRottaO.OfficeTranslationTool
 
         private async void buttonRevertChanges_Click(object sender, EventArgs e)
         {
-            var replaceResult = await formLogic.applyChangesOnOfficeFile(true, false);
+            var replaceResult = await formLogic.applyChangesOnOfficeFile(true, false, checkBoxPauseAfterSlide.Checked, checkBoxChangeProofLang.Checked);
 
             if (replaceResult.success)
             {

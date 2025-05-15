@@ -5,6 +5,7 @@ using LaRottaO.OfficeTranslationTool.Utils;
 using LaRottaO.OfficeTranslationTool.Utils.Utils;
 using System.Diagnostics;
 using static LaRottaO.OfficeTranslationTool.GlobalVariables;
+using static LaRottaO.OfficeTranslationTool.GlobalConstants;
 
 namespace LaRottaO.OfficeTranslationTool
 {
@@ -276,16 +277,16 @@ namespace LaRottaO.OfficeTranslationTool
             return resultDelete;
         }
 
-        public void setDictionaryLanguage(String sourceLanguage, String targetLanguage)
+        public void setDictionaryLanguage(String sourceLanguageName, String targetLanguageName)
         {
-            if (!String.IsNullOrEmpty(sourceLanguage))
+            if (!String.IsNullOrEmpty(sourceLanguageName))
             {
-                selectedSourceLanguage = AVAILABLE_LANGUAGES[sourceLanguage].ToUpper();
+                selectedSourceLanguage = AVAILABLE_TRANS_LANGS[sourceLanguageName];
             }
 
-            if (!String.IsNullOrEmpty(targetLanguage))
+            if (!String.IsNullOrEmpty(targetLanguageName))
             {
-                selectedTargetLanguage = AVAILABLE_LANGUAGES[targetLanguage].ToUpper();
+                selectedTargetLanguage = AVAILABLE_TRANS_LANGS[targetLanguageName];
             }
 
             if (areBothSourceAndDestintionLanguagesSet())
@@ -298,7 +299,7 @@ namespace LaRottaO.OfficeTranslationTool
 
         public Boolean areBothSourceAndDestintionLanguagesSet()
         {
-            return (!String.IsNullOrEmpty(selectedSourceLanguage)) && (!String.IsNullOrEmpty(selectedTargetLanguage));
+            return (selectedSourceLanguage != null) && (selectedTargetLanguage != null);
         }
 
         public (Boolean success, String errorReason) addTranslationToDictionary(String term, String translation, Boolean isPartial)
@@ -425,11 +426,10 @@ namespace LaRottaO.OfficeTranslationTool
             return (true, "");
         }
 
-        public async Task<(Boolean success, String errorReason)> applyChangesOnOfficeFile(Boolean useOriginalText, Boolean useTranslatedText)
+        public async Task<(Boolean success, String errorReason)> applyChangesOnOfficeFile(Boolean useOriginalText, Boolean useTranslatedText, Boolean pauseAfterEachSlide, Boolean setProofingLang)
         {
             await Task.Run(() =>
-            {
-                ///////////////////
+            {              
 
                 _iDictionary.initializeLocalDictionary();
 
@@ -445,24 +445,42 @@ namespace LaRottaO.OfficeTranslationTool
                     case ".pptx":
                     case ".ppt":
 
-                        foreach (ElementToBeTranslated shapeUnderTranslation in _iProcessOfficeFile.getETBTsStoredInMemory().shapes)
+                        var shapesBySlide = _iProcessOfficeFile.getETBTsStoredInMemory().shapes
+                            .GroupBy(s => s.slideNumber)
+                            .OrderBy(g => g.Key); // Optional: to process slides in order
+
+                        foreach (var slideGroup in shapesBySlide)
                         {
-                            //Check if the string is not a number, blank or pure symbols
-
-                            if (string.IsNullOrEmpty(shapeUnderTranslation.originalText))
+                            foreach (var shapeUnderTranslation in slideGroup)
                             {
-                                continue;
+                                if (string.IsNullOrEmpty(shapeUnderTranslation.originalText))
+                                {
+                                    continue;
+                                }
+
+                                if (!shapeUnderTranslation.originalText.Any(char.IsLetter))
+                                {
+                                    continue;
+                                }
+
+                                UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
+
+                                _iProcessOfficeFile.replaceETBTText(shapeUnderTranslation, useOriginalText, useTranslatedText);
+                                
+                                if (setProofingLang)
+                                {
+                                    _iProcessOfficeFile.setETBTProofLang(shapeUnderTranslation, selectedTargetLanguage);
+                                }
                             }
 
-                            if (!shapeUnderTranslation.originalText.Any(char.IsLetter))
+                            // Pause after each slide
+                            if (pauseAfterEachSlide)
                             {
-                                continue;
+                                MessageBox.Show($"Finished processing slide {slideGroup.Key}. Click OK to continue.",
+                                                "Slide Completed", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
-
-                            UIHelpers.setCursorOnDataGridRowThreadSafe(_mainForm.mainDataGridView, shapeUnderTranslation.indexOnPresentation, true);
-
-                            _iProcessOfficeFile.replaceETBTText(shapeUnderTranslation, useOriginalText, useTranslatedText);
                         }
+
 
                         break;
 

@@ -31,6 +31,8 @@
             mainDataGridView = new DataGridView();
             buttonOpenOfficeFile = new Button();
             panel1 = new Panel();
+            checkBoxChangeProofLang = new CheckBox();
+            checkBoxPauseAfterSlide = new CheckBox();
             comboBoxTranslationMethod = new ComboBox();
             buttonLunchConfig = new Button();
             buttonRevertChanges = new Button();
@@ -53,6 +55,8 @@
             pictureBoxLoading = new PictureBox();
             panelLoading = new Panel();
             label5 = new Label();
+            transOptionsTab = new TabPage();
+            label6 = new Label();
             ((System.ComponentModel.ISupportInitialize)mainDataGridView).BeginInit();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridViewPartialExpressions).BeginInit();
@@ -60,15 +64,17 @@
             partialExpressionsTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxLoading).BeginInit();
             panelLoading.SuspendLayout();
+            transOptionsTab.SuspendLayout();
             SuspendLayout();
             // 
             // mainDataGridView
             // 
             mainDataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             mainDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            mainDataGridView.Location = new Point(12, 109);
+            mainDataGridView.Location = new Point(12, 87);
             mainDataGridView.Name = "mainDataGridView";
-            mainDataGridView.Size = new Size(1080, 455);
+            mainDataGridView.RowHeadersWidth = 62;
+            mainDataGridView.Size = new Size(1080, 301);
             mainDataGridView.TabIndex = 0;
             mainDataGridView.CellBeginEdit += dataGridView_CellBeginEdit;
             mainDataGridView.CellEndEdit += dataGridView_CellEndEdit;
@@ -91,7 +97,6 @@
             // 
             // panel1
             // 
-            panel1.Controls.Add(comboBoxTranslationMethod);
             panel1.Controls.Add(buttonLunchConfig);
             panel1.Controls.Add(buttonRevertChanges);
             panel1.Controls.Add(buttonApplyChanges);
@@ -104,15 +109,39 @@
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(1104, 95);
+            panel1.Size = new Size(1104, 70);
             panel1.TabIndex = 2;
+            // 
+            // checkBoxChangeProofLang
+            // 
+            checkBoxChangeProofLang.AutoSize = true;
+            checkBoxChangeProofLang.Checked = true;
+            checkBoxChangeProofLang.CheckState = CheckState.Checked;
+            checkBoxChangeProofLang.Location = new Point(22, 106);
+            checkBoxChangeProofLang.Name = "checkBoxChangeProofLang";
+            checkBoxChangeProofLang.Size = new Size(297, 19);
+            checkBoxChangeProofLang.TabIndex = 13;
+            checkBoxChangeProofLang.Text = "Set Element Proofing Lang to destination Language";
+            checkBoxChangeProofLang.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxPauseAfterSlide
+            // 
+            checkBoxPauseAfterSlide.AutoSize = true;
+            checkBoxPauseAfterSlide.Checked = true;
+            checkBoxPauseAfterSlide.CheckState = CheckState.Checked;
+            checkBoxPauseAfterSlide.Location = new Point(22, 81);
+            checkBoxPauseAfterSlide.Name = "checkBoxPauseAfterSlide";
+            checkBoxPauseAfterSlide.Size = new Size(466, 19);
+            checkBoxPauseAfterSlide.TabIndex = 12;
+            checkBoxPauseAfterSlide.Text = "When applying changes to Powerpoint, pause after each slide to make review easier";
+            checkBoxPauseAfterSlide.UseVisualStyleBackColor = true;
             // 
             // comboBoxTranslationMethod
             // 
             comboBoxTranslationMethod.BackColor = SystemColors.ControlLight;
             comboBoxTranslationMethod.FlatStyle = FlatStyle.Flat;
             comboBoxTranslationMethod.FormattingEnabled = true;
-            comboBoxTranslationMethod.Location = new Point(456, 61);
+            comboBoxTranslationMethod.Location = new Point(22, 42);
             comboBoxTranslationMethod.Name = "comboBoxTranslationMethod";
             comboBoxTranslationMethod.Size = new Size(174, 23);
             comboBoxTranslationMethod.TabIndex = 11;
@@ -122,7 +151,7 @@
             buttonLunchConfig.FlatAppearance.BorderColor = Color.Silver;
             buttonLunchConfig.FlatAppearance.BorderSize = 2;
             buttonLunchConfig.FlatStyle = FlatStyle.Flat;
-            buttonLunchConfig.Location = new Point(1031, 18);
+            buttonLunchConfig.Location = new Point(1027, 18);
             buttonLunchConfig.Name = "buttonLunchConfig";
             buttonLunchConfig.Size = new Size(61, 37);
             buttonLunchConfig.TabIndex = 10;
@@ -217,7 +246,7 @@
             dataGridViewPartialExpressions.Location = new Point(19, 18);
             dataGridViewPartialExpressions.Name = "dataGridViewPartialExpressions";
             dataGridViewPartialExpressions.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            dataGridViewPartialExpressions.Size = new Size(454, 391);
+            dataGridViewPartialExpressions.Size = new Size(454, 199);
             dataGridViewPartialExpressions.TabIndex = 10;
             dataGridViewPartialExpressions.CellContentClick += dataGridViewPartialExpressions_CellContentClick;
             dataGridViewPartialExpressions.RowEnter += dataGridViewPartialExpressions_RowEnter;
@@ -225,11 +254,12 @@
             // tabControlConfig
             // 
             tabControlConfig.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tabControlConfig.Controls.Add(transOptionsTab);
             tabControlConfig.Controls.Add(partialExpressionsTab);
-            tabControlConfig.Location = new Point(12, 109);
+            tabControlConfig.Location = new Point(12, 87);
             tabControlConfig.Name = "tabControlConfig";
             tabControlConfig.SelectedIndex = 0;
-            tabControlConfig.Size = new Size(1080, 455);
+            tabControlConfig.Size = new Size(1080, 301);
             tabControlConfig.TabIndex = 11;
             tabControlConfig.Visible = false;
             // 
@@ -245,7 +275,7 @@
             partialExpressionsTab.Location = new Point(4, 24);
             partialExpressionsTab.Name = "partialExpressionsTab";
             partialExpressionsTab.Padding = new Padding(3);
-            partialExpressionsTab.Size = new Size(1072, 427);
+            partialExpressionsTab.Size = new Size(1072, 251);
             partialExpressionsTab.TabIndex = 0;
             partialExpressionsTab.Text = "Partial Expressions";
             partialExpressionsTab.UseVisualStyleBackColor = true;
@@ -316,7 +346,7 @@
             buttonSaveConfig.FlatAppearance.BorderColor = Color.Silver;
             buttonSaveConfig.FlatAppearance.BorderSize = 2;
             buttonSaveConfig.FlatStyle = FlatStyle.Flat;
-            buttonSaveConfig.Location = new Point(918, 584);
+            buttonSaveConfig.Location = new Point(918, 413);
             buttonSaveConfig.Name = "buttonSaveConfig";
             buttonSaveConfig.Size = new Size(174, 37);
             buttonSaveConfig.TabIndex = 12;
@@ -328,7 +358,7 @@
             // pictureBoxLoading
             // 
             pictureBoxLoading.Image = Properties.Resources.loading;
-            pictureBoxLoading.Location = new Point(3, 5);
+            pictureBoxLoading.Location = new Point(10, 7);
             pictureBoxLoading.Name = "pictureBoxLoading";
             pictureBoxLoading.Size = new Size(38, 38);
             pictureBoxLoading.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -337,9 +367,10 @@
             // 
             // panelLoading
             // 
+            panelLoading.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             panelLoading.Controls.Add(label5);
             panelLoading.Controls.Add(pictureBoxLoading);
-            panelLoading.Location = new Point(12, 573);
+            panelLoading.Location = new Point(12, 398);
             panelLoading.Name = "panelLoading";
             panelLoading.Size = new Size(315, 48);
             panelLoading.TabIndex = 17;
@@ -348,17 +379,40 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(56, 15);
+            label5.Location = new Point(54, 17);
             label5.Name = "label5";
             label5.Size = new Size(123, 15);
             label5.TabIndex = 14;
             label5.Text = "Loading, please wait...";
             // 
+            // transOptionsTab
+            // 
+            transOptionsTab.Controls.Add(label6);
+            transOptionsTab.Controls.Add(comboBoxTranslationMethod);
+            transOptionsTab.Controls.Add(checkBoxPauseAfterSlide);
+            transOptionsTab.Controls.Add(checkBoxChangeProofLang);
+            transOptionsTab.Location = new Point(4, 24);
+            transOptionsTab.Name = "transOptionsTab";
+            transOptionsTab.Size = new Size(1072, 273);
+            transOptionsTab.TabIndex = 1;
+            transOptionsTab.Text = "Translation options";
+            transOptionsTab.UseVisualStyleBackColor = true;
+            // 
+            // label6
+            // 
+            label6.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label6.Location = new Point(22, 16);
+            label6.Name = "label6";
+            label6.Size = new Size(108, 13);
+            label6.TabIndex = 14;
+            label6.Text = "Translation Method";
+            label6.TextAlign = ContentAlignment.MiddleCenter;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1104, 629);
+            ClientSize = new Size(1104, 458);
             Controls.Add(panelLoading);
             Controls.Add(buttonSaveConfig);
             Controls.Add(tabControlConfig);
@@ -378,6 +432,8 @@
             ((System.ComponentModel.ISupportInitialize)pictureBoxLoading).EndInit();
             panelLoading.ResumeLayout(false);
             panelLoading.PerformLayout();
+            transOptionsTab.ResumeLayout(false);
+            transOptionsTab.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -407,5 +463,9 @@
         private Label label5;
         public Panel panelLoading;
         private ComboBox comboBoxTranslationMethod;
+        private CheckBox checkBoxPauseAfterSlide;
+        private CheckBox checkBoxChangeProofLang;
+        private TabPage transOptionsTab;
+        private Label label6;
     }
 }
