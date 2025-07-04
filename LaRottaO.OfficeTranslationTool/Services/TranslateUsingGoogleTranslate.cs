@@ -156,7 +156,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
 
                 Debug.WriteLine("Opening web browser OK");
 
-                var setLangResult = setTranslationLanguages(GlobalVariables.selectedSourceLanguage, GlobalVariables.selectedTargetLanguage);
+                var setLangResult = setTranslationLanguages(GlobalVariables.selectedSourceLanguage.languageCode, GlobalVariables.selectedTargetLanguage.languageCode);
 
                 if (!setLangResult.success)
                 {

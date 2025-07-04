@@ -38,7 +38,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
                 translationDictionary = LoadTranslations();
             }
 
-            string key = createKey(selectedSourceLanguage, selectedTargetLanguage, term);
+            string key = createKey(selectedSourceLanguage.languageCode, selectedTargetLanguage.languageCode, term);
 
             if (translationDictionary.TryGetValue(key, out SavedTranslation? translation))
             {
@@ -57,7 +57,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
                     return (false, "The text cannot be empty");
                 }
 
-                string key = createKey(selectedSourceLanguage, selectedTargetLanguage, term);
+                string key = createKey(selectedSourceLanguage.languageCode, selectedTargetLanguage.languageCode, term);
 
                 if (translationDictionary.TryGetValue(key, out var existingTranslation))
                 {
@@ -69,8 +69,8 @@ namespace LaRottaO.OfficeTranslationTool.Services
 
                 SavedTranslation savedTranslation = new SavedTranslation
                 {
-                    sourceLanguage = selectedSourceLanguage,
-                    targetLanguage = selectedTargetLanguage,
+                    sourceLanguage = selectedSourceLanguage.languageCode,
+                    targetLanguage = selectedTargetLanguage.languageCode,
                     term = term,
                     translation = translation,
                     isAPartialText = isPartial
@@ -169,7 +169,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
                     return (false, "The term or translation cannot be empty");
                 }
 
-                string key = createKey(selectedSourceLanguage, selectedTargetLanguage, term);
+                string key = createKey(selectedSourceLanguage.languageCode, selectedTargetLanguage.languageCode, term);
 
                 if (translationDictionary.TryGetValue(key, out var foundOnDictionary))
                 {
