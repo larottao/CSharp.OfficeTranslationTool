@@ -15,7 +15,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
 
         public (bool success, string errorReason) initializeLocalDictionary()
         {
-            String newDictionaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{selectedSourceLanguage}_{selectedTargetLanguage}_saved_translations.json");
+            String newDictionaryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{selectedSourceLanguage.languageCode}_{selectedTargetLanguage.languageCode}_saved_translations.json");
 
             if (jsonDictionaryPath.Equals(newDictionaryPath))
             {
@@ -26,7 +26,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
 
             translationDictionary = LoadTranslations();
 
-            Debug.WriteLine($"Dictionary set to: {selectedSourceLanguage} {selectedTargetLanguage}");
+            Debug.WriteLine($"Dictionary set to: {selectedSourceLanguage.languageCode} {selectedTargetLanguage.languageCode}");
 
             return (true, "");
         }

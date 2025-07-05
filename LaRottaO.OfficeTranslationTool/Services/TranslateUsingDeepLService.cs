@@ -48,7 +48,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
             var body = new
             {
                 text = new[] { encodedText },
-                target_lang = selectedTargetLanguage
+                target_lang = selectedTargetLanguage.languageCode
             };
 
             request.AddJsonBody(body);
@@ -110,7 +110,7 @@ namespace LaRottaO.OfficeTranslationTool.Services
             var body = new
             {
                 text = new[] { originalTextWithProperLineJumps },
-                target_lang = selectedTargetLanguage
+                target_lang = selectedTargetLanguage.languageCode
             };
 
             request.AddJsonBody(body);
